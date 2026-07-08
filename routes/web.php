@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\CRM\LeadController;
+use App\Http\Controllers\CRM\ContactController;
 
 // Guest Routes
 Route::middleware('guest')->group(function () {
@@ -29,4 +30,7 @@ Route::middleware('auth')->group(function () {
     // CRM Routes
     Route::resource('clients', ClientController::class);
     Route::resource('leads', LeadController::class);
+    
+    Route::post('contacts/{contact}/primary', [ContactController::class, 'setPrimary'])->name('contacts.primary');
+    Route::resource('contacts', ContactController::class);
 });

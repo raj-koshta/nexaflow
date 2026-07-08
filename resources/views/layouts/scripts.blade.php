@@ -4,6 +4,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Global Script -->
 <script>
@@ -12,6 +14,30 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
+    // Global confirmation wrapper using SweetAlert2
+    window.confirmAction = function(title, text, confirmCallback) {
+        const isDark = $('html').attr('data-bs-theme') === 'dark';
+        
+        Swal.fire({
+            title: title || 'Are you sure?',
+            text: text || "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'var(--accent)',
+            cancelButtonColor: 'var(--text-muted)',
+            confirmButtonText: 'Yes, proceed!',
+            background: isDark ? 'var(--secondary-bg)' : '#fff',
+            color: 'var(--text-main)',
+            customClass: {
+                popup: 'border border-secondary border-opacity-10 shadow-lg rounded-4'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                confirmCallback();
+            }
+        });
+    };
 
     // Global toast function
     function showToast(title, message, type = 'success') {
