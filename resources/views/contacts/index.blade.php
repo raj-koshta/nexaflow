@@ -1,10 +1,10 @@
 @extends('layouts.master')
 
-@section('title', 'Clients')
+@section('title', 'Contacts')
 
 @push('custom-css')
 <style>
-    /* Add extra styles for skeleton specific to this view if needed */
+    /* Skeleton specific styles */
     .skeleton-text {
         height: 16px;
         background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
@@ -42,12 +42,12 @@
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4">
     <div>
-        <h1 class="h2 fw-bold mb-0">Clients</h1>
-        <p class="text-muted mb-0">Manage your customers and organizations.</p>
+        <h1 class="h2 fw-bold mb-0">Contacts</h1>
+        <p class="text-muted mb-0">Manage key people across your clients.</p>
     </div>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <button type="button" class="btn btn-primary shadow-sm" onclick="openClientOffcanvas()">
-            <i class="bi bi-plus-lg me-1"></i> Add Client
+        <button type="button" class="btn btn-primary shadow-sm" onclick="openContactOffcanvas()">
+            <i class="bi bi-plus-lg me-1"></i> Add Contact
         </button>
     </div>
 </div>
@@ -57,13 +57,14 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
             <div class="position-relative" style="max-width: 350px; width: 100%;">
                 <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                <input type="text" class="form-control ps-5" id="searchInput" placeholder="Search clients by name, email, phone...">
+                <input type="text" class="form-control ps-5" id="searchInput" placeholder="Search contacts by name, email, phone...">
             </div>
             <div class="d-flex gap-2">
-                <select class="form-select" id="statusFilter" style="min-width: 150px;">
-                    <option value="">All Statuses</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                <select class="form-select" id="clientFilter" style="min-width: 200px;">
+                    <option value="">All Clients</option>
+                    @foreach($clients as $client)
+                        <option value="{{ $client->id }}">{{ $client->company_name }}</option>
+                    @endforeach
                 </select>
                 <button class="btn btn-outline-secondary d-flex align-items-center" id="refreshBtn" title="Refresh">
                     <i class="bi bi-arrow-clockwise"></i>
@@ -72,44 +73,44 @@
         </div>
 
         <div id="table-container">
-            @include('clients.partials.table')
+            @include('contacts.partials.table')
         </div>
         
-        @include('clients.skeleton')
+        @include('contacts.skeleton')
     </div>
 </div>
 
-@include('clients.form')
+@include('contacts.form')
 
 @endsection
 
 @push('custom-scripts')
 <script>
     let searchTimeout = null;
-    const clientOffcanvas = new bootstrap.Offcanvas(document.getElementById('clientOffcanvas'));
-    const $clientForm = $('#clientForm');
+    const contactOffcanvas = new bootstrap.Offcanvas(document.getElementById('contactOffcanvas'));
+    const $contactForm = $('#contactForm');
 
-    // Function to load clients via AJAX
-    function loadClients(url = '{{ route("clients.index") }}') {
+    // Function to load contacts via AJAX
+    function loadContacts(url = '{{ route("contacts.index") }}') {
         const search = $('#searchInput').val();
-        const status = $('#statusFilter').val();
+        const client_id = $('#clientFilter').val();
         
         // Show skeleton
         $('#table-container').addClass('d-none');
-        $('#clients-skeleton').removeClass('d-none');
+        $('#contacts-skeleton').removeClass('d-none');
 
         $.ajax({
             url: url,
             type: 'GET',
-            data: { search: search, status: status },
+            data: { search: search, client_id: client_id },
             success: function(response) {
                 $('#table-container').html(response).removeClass('d-none');
-                $('#clients-skeleton').addClass('d-none');
+                $('#contacts-skeleton').addClass('d-none');
             },
             error: function() {
-                showToast('Error', 'Failed to load clients. Please try again.', 'error');
+                showToast('Error', 'Failed to load contacts. Please try again.', 'error');
                 $('#table-container').removeClass('d-none');
-                $('#clients-skeleton').addClass('d-none');
+                $('#contacts-skeleton').addClass('d-none');
             }
         });
     }
@@ -117,61 +118,58 @@
     // Event Listeners for Filters
     $('#searchInput').on('keyup', function() {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => loadClients(), 500);
+        searchTimeout = setTimeout(() => loadContacts(), 500);
     });
 
-    $('#statusFilter').on('change', function() {
-        loadClients();
+    $('#clientFilter').on('change', function() {
+        loadContacts();
     });
 
     $('#refreshBtn').on('click', function() {
-        loadClients();
+        loadContacts();
     });
 
     // Pagination Links Intercept
     $(document).on('click', '.pagination a', function(e) {
         e.preventDefault();
-        loadClients($(this).attr('href'));
+        loadContacts($(this).attr('href'));
     });
 
     // Open Offcanvas for Create
-    window.openClientOffcanvas = function() {
-        $clientForm[0].reset();
-        $('#client_id').val('');
-        $('#clientOffcanvasLabel').text('Add New Client');
+    window.openContactOffcanvas = function() {
+        $contactForm[0].reset();
+        $('#contact_id').val('');
+        $('#is_primary').prop('checked', false);
+        $('#contactOffcanvasLabel').text('Add New Contact');
         $('.is-invalid').removeClass('is-invalid');
-        clientOffcanvas.show();
+        contactOffcanvas.show();
     };
 
     // Open Offcanvas for Edit
-    $(document).on('click', '.edit-client-btn', function() {
-        const client = $(this).data('client');
-        $clientForm[0].reset();
+    $(document).on('click', '.edit-contact-btn', function() {
+        const contact = $(this).data('contact');
+        $contactForm[0].reset();
         $('.is-invalid').removeClass('is-invalid');
         
         // Populate form
-        $('#client_id').val(client.id);
-        $('#company_name').val(client.company_name);
-        $('#email').val(client.email);
-        $('#phone').val(client.phone);
-        $('#website').val(client.website);
-        $('#industry').val(client.industry);
-        $('#gst_number').val(client.gst_number);
-        $('#address').val(client.address);
-        $('#city').val(client.city);
-        $('#state').val(client.state);
-        $('#country').val(client.country);
-        $('#postal_code').val(client.postal_code);
-        $('#status').val(client.status);
+        $('#contact_id').val(contact.id);
+        $('#client_id').val(contact.client_id);
+        $('#name').val(contact.name);
+        $('#designation').val(contact.designation);
+        $('#department').val(contact.department);
+        $('#email').val(contact.email);
+        $('#phone').val(contact.phone);
+        $('#mobile').val(contact.mobile);
+        $('#is_primary').prop('checked', contact.is_primary);
         
-        $('#clientOffcanvasLabel').text('Edit Client');
-        clientOffcanvas.show();
+        $('#contactOffcanvasLabel').text('Edit Contact');
+        contactOffcanvas.show();
     });
 
-    // Save Client (Create / Update)
-    $('#saveClientBtn').on('click', function() {
-        const id = $('#client_id').val();
-        const url = id ? `/clients/${id}` : '{{ route("clients.store") }}';
+    // Save Contact (Create / Update)
+    $('#saveContactBtn').on('click', function() {
+        const id = $('#contact_id').val();
+        const url = id ? `/contacts/${id}` : '{{ route("contacts.store") }}';
         const method = id ? 'PUT' : 'POST';
         
         const $btn = $(this);
@@ -188,11 +186,11 @@
         $.ajax({
             url: url,
             type: method,
-            data: $clientForm.serialize(),
+            data: $contactForm.serialize(),
             success: function(response) {
-                clientOffcanvas.hide();
+                contactOffcanvas.hide();
                 showToast('Success', response.message, 'success');
-                loadClients();
+                loadContacts();
             },
             error: function(xhr) {
                 if(xhr.status === 422) {
@@ -214,27 +212,50 @@
         });
     });
 
-    // Delete Client
-    $(document).on('click', '.delete-client-btn', function() {
+    // Delete Contact
+    $(document).on('click', '.delete-contact-btn', function() {
         const id = $(this).data('id');
         const $btn = $(this);
         const originalIcon = $btn.html();
         
-        confirmAction('Delete Client?', 'Are you sure you want to delete this client?', function() {
+        confirmAction('Delete Contact?', 'Are you sure you want to delete this contact?', function() {
             $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
             
             $.ajax({
-                url: `/clients/${id}`,
+                url: `/contacts/${id}`,
                 type: 'DELETE',
                 success: function(response) {
                     showToast('Success', response.message, 'success');
-                    loadClients();
+                    loadContacts();
                 },
                 error: function(xhr) {
-                    showToast('Error', xhr.responseJSON?.message || 'Error deleting client', 'error');
+                    showToast('Error', xhr.responseJSON?.message || 'Error deleting contact', 'error');
                     $btn.html(originalIcon).prop('disabled', false);
                 }
             });
+        });
+    });
+
+    // Set Primary Contact
+    $(document).on('click', '.set-primary-btn', function() {
+        const id = $(this).data('id');
+        const $btn = $(this);
+        const originalText = $btn.text();
+        
+        $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+        
+        $.ajax({
+            url: `/contacts/${id}/primary`,
+            type: 'POST',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function(response) {
+                showToast('Success', response.message, 'success');
+                loadContacts();
+            },
+            error: function(xhr) {
+                showToast('Error', xhr.responseJSON?.message || 'Error updating primary status', 'error');
+                $btn.text(originalText).prop('disabled', false);
+            }
         });
     });
 </script>

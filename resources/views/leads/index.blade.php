@@ -224,11 +224,11 @@
 
     // Delete Lead
     $(document).on('click', '.delete-lead-btn', function() {
-        if(confirm('Are you sure you want to delete this lead?')) {
-            const id = $(this).data('id');
-            const $btn = $(this);
-            const originalIcon = $btn.html();
-            
+        const id = $(this).data('id');
+        const $btn = $(this);
+        const originalIcon = $btn.html();
+        
+        confirmAction('Delete Lead?', 'Are you sure you want to delete this lead?', function() {
             $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
             
             $.ajax({
@@ -243,7 +243,7 @@
                     $btn.html(originalIcon).prop('disabled', false);
                 }
             });
-        }
+        });
     });
 </script>
 @endpush

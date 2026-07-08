@@ -1,4 +1,4 @@
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse mt-3">
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
     <div class="position-sticky sidebar-sticky">
         <ul class="nav flex-column mb-auto">
             <li class="nav-item">
@@ -24,7 +24,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ request()->routeIs('contacts.*') ? 'active' : '' }}" href="{{ route('contacts.index') }}">
                     <i class="bi bi-person-badge-fill sidebar-icon"></i>
                     Contacts
                 </a>

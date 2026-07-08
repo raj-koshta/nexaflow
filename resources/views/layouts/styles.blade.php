@@ -52,9 +52,31 @@
         font-family: 'Outfit', sans-serif;
         min-height: 100vh;
         overflow-x: hidden;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        animation: fadeInPage 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Glassmorphism Cards */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @keyframes fadeInPage {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Global Micro-Animations */
+    a, button, .btn, .nav-link, .dropdown-item {
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .btn:active {
+        transform: scale(0.96) !important;
+    }
+
+    /* Card Smooth Hover Lift */
     .card {
         background: var(--card-bg);
         backdrop-filter: blur(16px);
@@ -62,12 +84,31 @@
         border: var(--glass-border);
         border-radius: 16px;
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform, box-shadow;
     }
     
     .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px -8px rgba(139, 92, 246, 0.2), 0 8px 12px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-bs-theme="dark"] .card:hover {
+        box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6), 0 8px 12px -6px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Table Row Hover */
+    .table-hover tbody tr {
+        transition: background-color 0.2s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .table-hover tbody tr:hover {
+        transform: scale(1.005) translateX(2px);
+    }
+
+    /* Inputs Focus Polish */
+    .form-control, .form-select {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     /* Header */
