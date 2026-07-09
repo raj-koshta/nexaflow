@@ -108,7 +108,9 @@
     </div>
 </div>
 
-@include('follow-ups.form')
+@push('modals')
+    @include('follow-ups.form')
+@endpush
 
 @endsection
 

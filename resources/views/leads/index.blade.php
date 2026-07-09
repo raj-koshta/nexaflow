@@ -89,7 +89,9 @@
     </div>
 </div>
 
-@include('leads.form')
+@push('modals')
+    @include('leads.form')
+@endpush
 
 @endsection
 

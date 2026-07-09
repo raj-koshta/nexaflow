@@ -40,4 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Notes & Documents
     Route::resource('notes', \App\Http\Controllers\CRM\NoteController::class)->only(['store', 'destroy']);
     Route::resource('documents', \App\Http\Controllers\CRM\DocumentController::class)->only(['store', 'destroy']);
+    
+    // Project Management
+    Route::resource('projects', \App\Http\Controllers\CRM\ProjectController::class);
 });

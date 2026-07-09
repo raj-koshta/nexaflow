@@ -35,7 +35,9 @@
     </div>
 
     <!-- Toast Container -->
-    <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+    <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;"></div>
+
+    @stack('modals')
 
     @include('layouts.scripts')
     <script>
