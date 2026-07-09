@@ -45,4 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('projects', \App\Http\Controllers\CRM\ProjectController::class);
     Route::resource('milestones', \App\Http\Controllers\CRM\MilestoneController::class)->only(['store', 'update', 'destroy']);
     Route::resource('tasks', \App\Http\Controllers\CRM\TaskController::class)->only(['store', 'update', 'destroy']);
+
+    // Support Desk
+    Route::resource('tickets', \App\Http\Controllers\CRM\TicketController::class);
 });
