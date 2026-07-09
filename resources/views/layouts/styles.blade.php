@@ -111,6 +111,23 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Select & Optgroup Styling for Dark Mode */
+    select.form-select option {
+        background-color: var(--secondary-bg);
+        color: var(--text-main);
+    }
+    
+    select.form-select optgroup {
+        background-color: var(--secondary-bg);
+        color: var(--text-muted);
+        font-weight: 600;
+        font-style: normal;
+    }
+    
+    [data-bs-theme="dark"] select.form-select optgroup {
+        color: var(--accent);
+    }
+
     /* Header */
     .navbar {
         background: var(--secondary-bg) !important;
