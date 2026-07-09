@@ -57,6 +57,17 @@
                     Follow Ups
                 </a>
             </li>
+            
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
+                <span>Support</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('tickets.*') ? 'active' : '' }}" href="{{ route('tickets.index') }}">
+                    <i class="bi bi-ticket-detailed sidebar-icon"></i>
+                    Tickets
+                </a>
+            </li>
+            
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="bi bi-headset sidebar-icon"></i>
