@@ -63,8 +63,18 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         Gate::authorize('view', $project);
-        $project->load(['client', 'creator']);
-        return response()->json($project);
+        
+        $project->load([
+            'client', 
+            'creator', 
+            'milestones' => function($q) { $q->orderBy('due_date', 'asc'); },
+            'tasks.assignee',
+            'tasks.milestone'
+        ]);
+        
+        $users = \App\Models\User::orderBy('name')->get();
+
+        return view('projects.show', compact('project', 'users'));
     }
 
     public function update(UpdateProjectRequest $request, Project $project)

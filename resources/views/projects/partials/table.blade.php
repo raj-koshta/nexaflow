@@ -73,7 +73,7 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-link text-primary p-1" title="View Dashboard (Coming Soon)">
+                                <a href="{{ route('projects.show', $project->id) }}" class="btn btn-sm btn-link text-primary p-1" title="View Dashboard">
                                     <i class="bi bi-eye fs-5"></i>
                                 </a>
                                 <button class="btn btn-sm btn-link text-muted edit-project-btn p-1" data-project="{{ json_encode($project) }}" title="Edit Project">

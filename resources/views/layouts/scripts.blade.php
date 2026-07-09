@@ -7,6 +7,11 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Custom Scripts placeholder -->
+@stack('custom-scripts')
+<!-- SortableJS -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
 <!-- Global Script -->
 <script>
     $.ajaxSetup({

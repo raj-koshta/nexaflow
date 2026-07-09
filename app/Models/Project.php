@@ -48,4 +48,14 @@ class Project extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function milestones()
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }
