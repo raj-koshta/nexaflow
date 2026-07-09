@@ -68,6 +68,16 @@
                 </a>
             </li>
             
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
+                <span>AI Assistant</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('ai.chat.*') ? 'active' : '' }}" href="{{ route('ai.chat.index') }}">
+                    <i class="bi bi-robot sidebar-icon"></i>
+                    AI Chat
+                </a>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="bi bi-headset sidebar-icon"></i>

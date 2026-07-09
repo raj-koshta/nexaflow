@@ -49,4 +49,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Support Desk
     Route::resource('tickets', \App\Http\Controllers\CRM\TicketController::class);
     Route::post('tickets/{ticket}/replies', [\App\Http\Controllers\CRM\TicketReplyController::class, 'store'])->name('tickets.replies.store');
+
+    // AI Assistant
+    Route::get('ai/chat/{id?}', [\App\Http\Controllers\AI\AiChatController::class, 'index'])->name('ai.chat.index');
+    Route::post('ai/chat/{id?}', [\App\Http\Controllers\AI\AiChatController::class, 'storeMessage'])->name('ai.chat.store');
+    Route::delete('ai/chat/{id}', [\App\Http\Controllers\AI\AiChatController::class, 'destroy'])->name('ai.chat.destroy');
 });
