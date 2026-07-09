@@ -49,6 +49,16 @@ class TicketController extends Controller
         return view('tickets.index', compact('clients', 'users', 'tickets'));
     }
 
+    public function show(Ticket $ticket)
+    {
+        $ticket->load(['client', 'assignee', 'creator', 'replies.user']);
+        
+        // We will need users for reassignment dropdowns if we add them later, 
+        // but for now we just show the ticket details.
+        
+        return view('tickets.show', compact('ticket'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
