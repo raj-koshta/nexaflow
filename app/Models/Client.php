@@ -59,6 +59,11 @@ class Client extends Model
         return $this->hasMany(Document::class);
     }
 
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');

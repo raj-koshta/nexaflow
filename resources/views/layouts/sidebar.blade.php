@@ -34,7 +34,7 @@
                 <span>Operations</span>
             </h6>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ request()->routeIs('projects.*') ? 'active' : '' }}" href="{{ route('projects.index') }}">
                     <i class="bi bi-briefcase-fill sidebar-icon"></i>
                     Projects
                 </a>

@@ -80,7 +80,9 @@
     </div>
 </div>
 
-@include('contacts.form')
+@push('modals')
+    @include('contacts.form')
+@endpush
 
 @endsection
 

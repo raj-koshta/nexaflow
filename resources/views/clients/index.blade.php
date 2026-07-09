@@ -79,7 +79,9 @@
     </div>
 </div>
 
-@include('clients.form')
+@push('modals')
+    @include('clients.form')
+@endpush
 
 @endsection
 
