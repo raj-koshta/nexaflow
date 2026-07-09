@@ -43,6 +43,9 @@
                                 @endif
                             </td>
                             <td class="text-end">
+                                <a href="{{ route('clients.show', $client->id) }}" class="btn btn-sm btn-link text-primary p-1" title="View Profile">
+                                    <i class="bi bi-eye fs-5"></i>
+                                </a>
                                 <button class="btn btn-sm btn-link text-muted edit-client-btn p-1" data-client="{{ json_encode($client) }}" title="Edit Client">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </button>

@@ -20,10 +20,10 @@ Route::middleware('guest')->group(function () {
 });
 
 // Authenticated Routes
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\CRM\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -33,4 +33,11 @@ Route::middleware('auth')->group(function () {
     
     Route::post('contacts/{contact}/primary', [ContactController::class, 'setPrimary'])->name('contacts.primary');
     Route::resource('contacts', ContactController::class);
+    Route::resource('activities', \App\Http\Controllers\CRM\ActivityController::class);
+    Route::post('follow-ups/{follow_up}/complete', [\App\Http\Controllers\CRM\FollowUpController::class, 'markCompleted'])->name('follow-ups.complete');
+    Route::resource('follow-ups', \App\Http\Controllers\CRM\FollowUpController::class);
+    
+    // Notes & Documents
+    Route::resource('notes', \App\Http\Controllers\CRM\NoteController::class)->only(['store', 'destroy']);
+    Route::resource('documents', \App\Http\Controllers\CRM\DocumentController::class)->only(['store', 'destroy']);
 });

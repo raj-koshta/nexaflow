@@ -39,6 +39,26 @@ class Client extends Model
         return $this->hasMany(Contact::class);
     }
 
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
+
+    public function followUps()
+    {
+        return $this->hasMany(FollowUp::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');

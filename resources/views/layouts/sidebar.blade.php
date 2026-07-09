@@ -2,8 +2,8 @@
     <div class="position-sticky sidebar-sticky">
         <ul class="nav flex-column mb-auto">
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
-                    <i class="bi bi-grid-1x2-fill sidebar-icon"></i>
+                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                    <i class="bi bi-speedometer2 sidebar-icon"></i>
                     Dashboard
                 </a>
             </li>
@@ -43,6 +43,18 @@
                 <a class="nav-link" href="#">
                     <i class="bi bi-check-square-fill sidebar-icon"></i>
                     Tasks
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('activities.*') ? 'active' : '' }}" href="{{ route('activities.index') }}">
+                    <i class="bi bi-activity sidebar-icon"></i>
+                    Activities
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('follow-ups.*') ? 'active' : '' }}" href="{{ route('follow-ups.index') }}">
+                    <i class="bi bi-calendar-check sidebar-icon"></i>
+                    Follow Ups
                 </a>
             </li>
             <li class="nav-item">

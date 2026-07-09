@@ -64,12 +64,23 @@ class ClientController extends Controller
     }
 
     /**
-     * Show the specified client.
+     * Display the specified client profile.
      */
     public function show(Client $client)
     {
         Gate::authorize('view', $client);
-        return response()->json($client);
+        
+        $client->load([
+            'contacts',
+            'notes.creator',
+            'documents.creator',
+            'activities' => function($q) {
+                $q->orderBy('activity_date', 'desc');
+            },
+            'activities.creator'
+        ]);
+
+        return view('clients.show', compact('client'));
     }
 
     /**

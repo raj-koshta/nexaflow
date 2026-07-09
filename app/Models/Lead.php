@@ -35,4 +35,24 @@ class Lead extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
+
+    public function followUps()
+    {
+        return $this->hasMany(FollowUp::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
 }
