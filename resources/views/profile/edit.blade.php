@@ -247,7 +247,7 @@
 <script>
     $(document).ready(function() {
         // Profile Update
-        $('#profileUpdateForm').on('submit', function(e) {
+        $('#profileUpdateForm').off('submit').on('submit', function(e) {
             e.preventDefault();
             
             $.ajax({
@@ -274,7 +274,7 @@
         });
         
         // Password Update
-        $('#passwordUpdateForm').on('submit', function(e) {
+        $('#passwordUpdateForm').off('submit').on('submit', function(e) {
             e.preventDefault();
             const $form = $(this);
             
