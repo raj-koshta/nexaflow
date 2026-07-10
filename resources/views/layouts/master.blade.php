@@ -19,15 +19,15 @@
 
     @include('layouts.header')
 
-    <div class="container-fluid">
-        <div class="row">
+    <div class="container-fluid p-0">
+        <div class="d-flex w-100">
             @auth
                 @include('layouts.sidebar')
-                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 content-wrapper has-sidebar">
+                <main class="content-wrapper w-100 main-content pt-3 px-4">
                     @yield('content')
                 </main>
             @else
-                <main class="col-12 px-md-4 content-wrapper">
+                <main class="content-wrapper w-100 pt-3 px-4">
                     @yield('content')
                 </main>
             @endauth
@@ -77,7 +77,7 @@
 
             // Close sidebar when clicking outside on mobile
             $(document).on('click', function(e) {
-                if ($(window).width() <= 768) {
+                if ($(window).width() < 992) {
                     if (!$(e.target).closest('#sidebarMenu, #sidebarToggle').length) {
                         $('#sidebarMenu').removeClass('show');
                     }

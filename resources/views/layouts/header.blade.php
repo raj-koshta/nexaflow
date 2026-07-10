@@ -4,6 +4,20 @@
         <i class="bi bi-layers-fill me-2"></i>NexaFlow
     </a>
 
+    <!-- Center: Global Search -->
+    @auth
+    <div class="position-relative d-none d-md-block mx-4 flex-grow-1" style="max-width: 500px;" id="globalSearchContainer">
+        <div class="input-group">
+            <span class="input-group-text bg-transparent border-end-0" style="border-color: rgba(255,255,255,0.1);"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0 ps-0" id="globalSearchInput" placeholder="Search clients, projects, tasks..." style="background: transparent; border-color: rgba(255,255,255,0.1); color: var(--text-main); box-shadow: none;" autocomplete="off">
+        </div>
+        
+        <div class="dropdown-menu w-100 shadow mt-1 p-0" id="globalSearchResults" style="background: var(--secondary-bg); border: var(--glass-border); max-height: 400px; overflow-y: auto;">
+            <!-- Injected via AJAX -->
+        </div>
+    </div>
+    @endauth
+
     <!-- Right: Icons & Profile + Hamburger -->
     <div class="d-flex align-items-center gap-3 gap-md-4">
         <!-- Theme Toggler -->
@@ -13,12 +27,24 @@
         
         @auth
         <!-- Notifications -->
-        <a class="nav-link position-relative p-0" href="#" style="color: var(--text-main);">
-            <i class="bi bi-bell-fill fs-5"></i>
-            <span class="position-absolute top-25 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                <span class="visually-hidden">New alerts</span>
-            </span>
-        </a>
+        <div class="dropdown" id="notificationDropdownContainer">
+            <a class="nav-link position-relative p-0" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--text-main);">
+                <i class="bi bi-bell-fill fs-5"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none" id="notificationBadge">
+                    <span class="visually-hidden">New alerts</span>
+                </span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end shadow p-0" style="width: 320px; background: var(--secondary-bg); border: var(--glass-border); margin-top: 10px;" aria-labelledby="notificationDropdown">
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+                    <h6 class="mb-0 fw-bold">Notifications</h6>
+                    <button class="btn btn-sm btn-link text-decoration-none p-0" id="markAllReadBtn" style="font-size: 0.8rem; color: var(--accent);">Mark all read</button>
+                </div>
+                <div class="notification-list" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Injected via AJAX -->
+                    <div class="text-center p-4 text-muted small" id="noNotificationsMsg">No new notifications</div>
+                </div>
+            </div>
+        </div>
 
         <!-- Profile Dropdown -->
         <div class="dropdown">

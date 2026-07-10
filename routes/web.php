@@ -6,6 +6,10 @@ use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\CRM\LeadController;
 use App\Http\Controllers\CRM\ContactController;
 use App\Http\Controllers\CRM\ReportController;
+use App\Http\Controllers\CRM\NotificationController;
+use App\Http\Controllers\CRM\ActivityLogController;
+use App\Http\Controllers\CRM\GlobalSearchController;
+use App\Http\Controllers\CRM\FileManagerController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 
@@ -25,6 +29,8 @@ Route::middleware('guest')->group(function () {
 // Authenticated Routes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\CRM\DashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('/search', [GlobalSearchController::class, 'search'])->name('global.search');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -32,6 +38,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+        Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('readAll');
+        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+        Route::post('/test', [NotificationController::class, 'testNotification'])->name('test');
+    });
+
+    // Activity Logs
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -48,6 +66,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Notes & Documents
     Route::resource('notes', \App\Http\Controllers\CRM\NoteController::class)->only(['store', 'destroy']);
     Route::resource('documents', \App\Http\Controllers\CRM\DocumentController::class)->only(['store', 'destroy']);
+
+    // File Manager
+    Route::get('/file-manager', [FileManagerController::class, 'index'])->name('file-manager.index');
+    Route::get('/file-manager/{file}/download', [FileManagerController::class, 'download'])->name('file-manager.download');
+    Route::delete('/file-manager/{file}', [FileManagerController::class, 'destroy'])->name('file-manager.destroy');
     
     // Project Management
     Route::resource('projects', \App\Http\Controllers\CRM\ProjectController::class);
