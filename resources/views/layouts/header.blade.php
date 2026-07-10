@@ -27,7 +27,7 @@
                 <span class="fw-medium ms-2 d-none d-md-inline">{{ auth()->user()->name }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end position-absolute shadow-sm" style="background: var(--secondary-bg); border: var(--glass-border); margin-top: 10px;" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item py-2" href="#" style="color: var(--text-main);"><i class="bi bi-person me-2 text-muted"></i>Profile</a></li>
+                <li><a class="dropdown-item py-2" href="{{ route('profile.edit') }}" style="color: var(--text-main);"><i class="bi bi-person me-2 text-muted"></i>Profile</a></li>
                 <li><a class="dropdown-item py-2" href="#" style="color: var(--text-main);"><i class="bi bi-gear me-2 text-muted"></i>Settings</a></li>
                 <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
                 <li>
