@@ -16,6 +16,17 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
+    public function index()
+    {
+        $tasks = Task::with(['project', 'assignee', 'milestone'])
+            ->latest()
+            ->get();
+            
+        $projects = \App\Models\Project::select('id', 'name')->get();
+            
+        return view('tasks.index', compact('tasks', 'projects'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
