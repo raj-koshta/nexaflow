@@ -95,7 +95,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}">
                     <i class="bi bi-bar-chart-line-fill sidebar-icon"></i>
                     Reports
                 </a>

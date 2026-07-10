@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CRM\ClientController;
 use App\Http\Controllers\CRM\LeadController;
 use App\Http\Controllers\CRM\ContactController;
+use App\Http\Controllers\CRM\ReportController;
 use App\Http\Controllers\ProfileController;
 
 // Guest Routes
@@ -52,6 +53,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Support Desk
     Route::resource('tickets', \App\Http\Controllers\CRM\TicketController::class);
     Route::post('tickets/{ticket}/replies', [\App\Http\Controllers\CRM\TicketReplyController::class, 'store'])->name('tickets.replies.store');
+
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/clients', [ReportController::class, 'clients'])->name('clients');
+        Route::get('/projects', [ReportController::class, 'projects'])->name('projects');
+        Route::get('/tasks', [ReportController::class, 'tasks'])->name('tasks');
+    });
 
     // AI Assistant
     Route::get('ai/chat/{id?}', [\App\Http\Controllers\AI\AiChatController::class, 'index'])->name('ai.chat.index');
