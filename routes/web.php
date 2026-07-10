@@ -7,6 +7,7 @@ use App\Http\Controllers\CRM\LeadController;
 use App\Http\Controllers\CRM\ContactController;
 use App\Http\Controllers\CRM\ReportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingController;
 
 // Guest Routes
 Route::middleware('guest')->group(function () {
@@ -28,6 +29,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
