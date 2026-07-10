@@ -1,4 +1,4 @@
-<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+<nav id="sidebarMenu" class="sidebar bg-secondary-bg">
     <div class="position-sticky sidebar-sticky">
         <ul class="nav flex-column mb-auto">
             <li class="nav-item">
@@ -17,6 +17,7 @@
                     Clients
                 </a>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('leads.*') ? 'active' : '' }}" href="{{ route('leads.index') }}">
                     <i class="bi bi-funnel-fill sidebar-icon"></i>
@@ -55,6 +56,12 @@
                 <a class="nav-link {{ request()->routeIs('follow-ups.*') ? 'active' : '' }}" href="{{ route('follow-ups.index') }}">
                     <i class="bi bi-calendar-check sidebar-icon"></i>
                     Follow Ups
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('file-manager.*') ? 'active' : '' }}" href="{{ route('file-manager.index') }}">
+                    <i class="bi bi-folder2-open sidebar-icon"></i>
+                    File Manager
                 </a>
             </li>
             
@@ -98,6 +105,22 @@
                 <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}">
                     <i class="bi bi-bar-chart-line-fill sidebar-icon"></i>
                     Reports
+                </a>
+            </li>
+            
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
+                <span>System</span>
+            </h6>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}" href="{{ route('activity-logs.index') }}">
+                    <i class="bi bi-clock-history sidebar-icon"></i>
+                    Audit Logs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.index') }}">
+                    <i class="bi bi-gear sidebar-icon"></i>
+                    Settings
                 </a>
             </li>
         </ul>
