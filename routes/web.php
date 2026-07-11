@@ -10,6 +10,12 @@ use App\Http\Controllers\CRM\NotificationController;
 use App\Http\Controllers\CRM\ActivityLogController;
 use App\Http\Controllers\CRM\GlobalSearchController;
 use App\Http\Controllers\CRM\FileManagerController;
+use App\Http\Controllers\CRM\ImportExportController;
+use App\Http\Controllers\CRM\UserController;
+use App\Http\Controllers\CRM\TeamController;
+use App\Http\Controllers\CRM\CompanyController;
+use App\Http\Controllers\CRM\RoleController;
+use App\Http\Controllers\CRM\PermissionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 
@@ -71,7 +77,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/file-manager', [FileManagerController::class, 'index'])->name('file-manager.index');
     Route::get('/file-manager/{file}/download', [FileManagerController::class, 'download'])->name('file-manager.download');
     Route::delete('/file-manager/{file}', [FileManagerController::class, 'destroy'])->name('file-manager.destroy');
+
+    // Import / Export
+    Route::prefix('import-export')->name('import-export.')->group(function () {
+        Route::get('/', [ImportExportController::class, 'index'])->name('index');
+        Route::post('/template', [ImportExportController::class, 'downloadTemplate'])->name('template');
+        Route::post('/export', [ImportExportController::class, 'export'])->name('export');
+        Route::post('/import', [ImportExportController::class, 'import'])->name('import');
+    });
     
+    // User Management
+    Route::resource('users', UserController::class)->except(['create', 'show']);
+
+    // Team Management
+    Route::resource('teams', TeamController::class)->except(['create']);
+    Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
+    Route::delete('teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('teams.members.remove');
+
+    // Company Management
+    Route::resource('companies', CompanyController::class)->except(['create']);
+    Route::post('companies/{company}/members', [CompanyController::class, 'addMember'])->name('companies.members.add');
+    Route::delete('companies/{company}/members/{user}', [CompanyController::class, 'removeMember'])->name('companies.members.remove');
+
+    // Role & Permission Management
+    Route::resource('roles', RoleController::class)->except(['create', 'show']);
+    Route::resource('permissions', PermissionController::class)->except(['create', 'show']);
+
     // Project Management
     Route::resource('projects', \App\Http\Controllers\CRM\ProjectController::class);
     Route::resource('milestones', \App\Http\Controllers\CRM\MilestoneController::class)->only(['store', 'update', 'destroy']);
