@@ -57,6 +57,21 @@
 
 @push('modals')
     @include('tickets.form')
+    
+    <!-- Quick View Modal -->
+    <div class="modal fade" id="ticketQuickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content border-0 shadow-lg" style="border: var(--glass-border) !important; border-radius: 16px; overflow: hidden;">
+                <div id="quickViewContent">
+                    <!-- Content loaded via AJAX -->
+                    <div class="p-5 text-center text-muted">
+                        <div class="spinner-border mb-3" role="status"></div>
+                        <div>Loading ticket details...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endpush
 
 @endsection
@@ -137,6 +152,40 @@
     $(document).on('click', '.edit-ticket-btn', function(e) {
         e.preventDefault();
         openTicketOffcanvas($(this).data('ticket'));
+    });
+
+    // Quick View Ticket
+    $(document).on('click', '.quick-view-btn', function(e) {
+        e.preventDefault();
+        const url = $(this).data('url');
+        
+        $('#quickViewContent').html(`
+            <div class="p-5 text-center text-muted">
+                <div class="spinner-border mb-3" role="status"></div>
+                <div>Loading ticket details...</div>
+            </div>
+        `);
+        
+        const modal = new bootstrap.Modal(document.getElementById('ticketQuickViewModal'));
+        modal.show();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                $('#quickViewContent').html(response);
+            },
+            error: function() {
+                $('#quickViewContent').html(`
+                    <div class="p-5 text-center text-danger">
+                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+                        <h5>Error loading ticket details</h5>
+                        <p class="text-muted">Please try again or open the full ticket.</p>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                `);
+            }
+        });
     });
 
     $ticketForm.on('submit', function(e) {

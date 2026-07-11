@@ -27,6 +27,18 @@ class TaskController extends Controller
         return view('tasks.index', compact('tasks', 'projects'));
     }
 
+    public function show(Request $request, Task $task)
+    {
+        $task->load(['project', 'assignee', 'milestone', 'creator']);
+        
+        if ($request->ajax()) {
+            return view('tasks.partials.quick-view', compact('task'))->render();
+        }
+        
+        // If we ever want a standalone task page
+        return view('tasks.show', compact('task'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

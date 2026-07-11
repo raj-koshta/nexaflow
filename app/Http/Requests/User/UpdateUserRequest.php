@@ -27,7 +27,8 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $userId],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role' => ['nullable', 'string']
+            'roles' => ['nullable', 'array'],
+            'roles.*' => ['string']
         ];
     }
 }

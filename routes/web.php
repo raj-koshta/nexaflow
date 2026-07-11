@@ -42,8 +42,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
-    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::middleware(['role:Administrator'])->group(function () {
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+    });
 
     // Notifications
     Route::prefix('notifications')->name('notifications.')->group(function () {
@@ -55,7 +57,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Activity Logs
-    Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::middleware(['role:Administrator'])->group(function () {
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -86,31 +90,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/import', [ImportExportController::class, 'import'])->name('import');
     });
     
-    // User Management
-    Route::resource('users', UserController::class)->except(['create', 'show']);
+    // System Management (Admin Only)
+    Route::middleware(['role:Administrator'])->group(function () {
+        // User Management
+        Route::resource('users', UserController::class)->except(['create', 'show']);
 
-    // Team Management
-    Route::resource('teams', TeamController::class)->except(['create']);
-    Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
-    Route::delete('teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('teams.members.remove');
+        // Team Management
+        Route::resource('teams', TeamController::class)->except(['create']);
+        Route::post('teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.members.add');
+        Route::delete('teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('teams.members.remove');
 
-    // Company Management
-    Route::resource('companies', CompanyController::class)->except(['create']);
-    Route::post('companies/{company}/members', [CompanyController::class, 'addMember'])->name('companies.members.add');
-    Route::delete('companies/{company}/members/{user}', [CompanyController::class, 'removeMember'])->name('companies.members.remove');
+        // Company Management
+        Route::resource('companies', CompanyController::class)->except(['create']);
+        Route::post('companies/{company}/members', [CompanyController::class, 'addMember'])->name('companies.members.add');
+        Route::delete('companies/{company}/members/{user}', [CompanyController::class, 'removeMember'])->name('companies.members.remove');
 
-    // Role & Permission Management
-    Route::resource('roles', RoleController::class)->except(['create', 'show']);
-    Route::resource('permissions', PermissionController::class)->except(['create', 'show']);
+        // Role & Permission Management
+        Route::resource('roles', RoleController::class)->except(['create', 'show']);
+        Route::resource('permissions', PermissionController::class)->except(['create', 'show']);
+    });
 
-    // Project Management
+    // Projects
     Route::resource('projects', \App\Http\Controllers\CRM\ProjectController::class);
+    Route::post('projects/{project}/ai-tasks', [\App\Http\Controllers\CRM\ProjectController::class, 'aiGenerateTasks'])->name('projects.ai-tasks');
     Route::resource('milestones', \App\Http\Controllers\CRM\MilestoneController::class)->only(['store', 'update', 'destroy']);
-    Route::resource('tasks', \App\Http\Controllers\CRM\TaskController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('tasks', \App\Http\Controllers\CRM\TaskController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
     // Support Desk
     Route::resource('tickets', \App\Http\Controllers\CRM\TicketController::class);
     Route::post('tickets/{ticket}/replies', [\App\Http\Controllers\CRM\TicketReplyController::class, 'store'])->name('tickets.replies.store');
+    Route::post('tickets/{ticket}/ai-summarize', [\App\Http\Controllers\CRM\TicketController::class, 'aiSummarize'])->name('tickets.ai-summarize');
+    Route::post('tickets/{ticket}/ai-reply', [\App\Http\Controllers\CRM\TicketController::class, 'aiGenerateReply'])->name('tickets.ai-reply');
 
     // Reports
     Route::prefix('reports')->name('reports.')->group(function () {
@@ -121,6 +131,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // AI Assistant
+    Route::get('ai/email-generator', [\App\Http\Controllers\AI\AiEmailController::class, 'index'])->name('ai.email.index');
+    Route::post('ai/email-generator/generate', [\App\Http\Controllers\AI\AiEmailController::class, 'generate'])->name('ai.email.generate');
+    Route::post('ai/email-generator/send', [\App\Http\Controllers\AI\AiEmailController::class, 'send'])->name('ai.email.send');
     Route::get('ai/chat/{id?}', [\App\Http\Controllers\AI\AiChatController::class, 'index'])->name('ai.chat.index');
     Route::post('ai/chat/{id?}', [\App\Http\Controllers\AI\AiChatController::class, 'storeMessage'])->name('ai.chat.store');
     Route::delete('ai/chat/{id}', [\App\Http\Controllers\AI\AiChatController::class, 'destroy'])->name('ai.chat.destroy');

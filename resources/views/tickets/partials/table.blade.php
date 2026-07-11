@@ -90,9 +90,9 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <a href="{{ route('tickets.show', $ticket) }}" class="btn btn-sm btn-link text-primary p-1" title="View Ticket Details">
+                                <button class="btn btn-sm btn-link text-primary p-1 quick-view-btn" data-url="{{ route('tickets.show', $ticket) }}" title="Quick View Ticket">
                                     <i class="bi bi-eye fs-5"></i>
-                                </a>
+                                </button>
                                 <button class="btn btn-sm btn-link text-muted edit-ticket-btn p-1" data-ticket="{{ json_encode($ticket) }}" title="Edit Ticket">
                                     <i class="bi bi-pencil-square fs-5"></i>
                                 </button>

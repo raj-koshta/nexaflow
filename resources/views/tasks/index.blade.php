@@ -203,6 +203,9 @@
                                     <span class="badge bg-{{ $sColor }} bg-opacity-10 text-{{ $sColor }} border border-{{ $sColor }} border-opacity-25 rounded-pill px-2">{{ $task->status }}</span>
                                 </td>
                                 <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-link text-primary p-1 quick-view-task-btn" data-url="{{ route('tasks.show', $task->id) }}" title="Quick View Task">
+                                        <i class="bi bi-eye fs-5"></i>
+                                    </button>
                                     <button class="btn btn-sm btn-link text-muted edit-task-btn p-1" data-task="{{ json_encode($task) }}">
                                         <i class="bi bi-pencil-square fs-5"></i>
                                     </button>
@@ -262,9 +265,14 @@
                                     <span class="badge bg-{{ $pColor }} bg-opacity-10 text-{{ $pColor }} border border-{{ $pColor }} border-opacity-25 rounded px-2" style="font-size: 0.65rem;">
                                         {{ strtoupper($task->priority) }}
                                     </span>
-                                    <button class="btn btn-sm btn-link text-muted p-0 edit-task-btn" data-task="{{ json_encode($task) }}">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-link text-primary p-0 quick-view-task-btn" data-url="{{ route('tasks.show', $task->id) }}" title="Quick View Task">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-link text-muted p-0 edit-task-btn" data-task="{{ json_encode($task) }}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 
                                 <h6 class="fw-bold mb-2 fs-6 text-main" style="line-height: 1.4;">{{ $task->title }}</h6>
@@ -383,6 +391,21 @@
                 <button type="submit" class="btn btn-primary px-4">Save Task</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Task Quick View Modal -->
+<div class="modal fade" id="taskQuickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0 shadow-lg" style="border: var(--glass-border) !important; border-radius: 16px; overflow: hidden;">
+            <div id="taskQuickViewContent">
+                <!-- Content loaded via AJAX -->
+                <div class="p-5 text-center text-muted">
+                    <div class="spinner-border mb-3" role="status"></div>
+                    <div>Loading task details...</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endpush
@@ -509,6 +532,40 @@
                     setTimeout(() => location.reload(), 1000);
                 }
             });
+        });
+    });
+
+    // Task Quick View
+    $(document).on('click', '.quick-view-task-btn', function(e) {
+        e.preventDefault();
+        const url = $(this).data('url');
+        
+        $('#taskQuickViewContent').html(`
+            <div class="p-5 text-center text-muted">
+                <div class="spinner-border mb-3" role="status"></div>
+                <div>Loading task details...</div>
+            </div>
+        `);
+        
+        const modal = new bootstrap.Modal(document.getElementById('taskQuickViewModal'));
+        modal.show();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                $('#taskQuickViewContent').html(response);
+            },
+            error: function() {
+                $('#taskQuickViewContent').html(`
+                    <div class="p-5 text-center text-danger">
+                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+                        <h5>Error loading task details</h5>
+                        <p class="text-muted">Please try again.</p>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                `);
+            }
         });
     });
 </script>

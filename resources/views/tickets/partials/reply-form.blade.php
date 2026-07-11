@@ -21,13 +21,18 @@
                 <form class="reply-form" data-internal="0">
                     @csrf
                     <div class="mb-3">
-                        <textarea class="form-control bg-transparent text-main border-secondary border-opacity-25 focus-ring focus-ring-primary" name="message" rows="4" placeholder="Type your reply here... (Visible to client)" required style="resize: none;"></textarea>
+                        <textarea class="form-control bg-transparent text-main border-secondary border-opacity-25 focus-ring focus-ring-primary" id="reply-message" name="message" rows="4" placeholder="Type your reply here... (Visible to client)" required style="resize: none;"></textarea>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="text-muted small"><i class="bi bi-info-circle me-1"></i> This reply will be visible to the client.</div>
-                        <button type="submit" class="btn btn-primary px-4 shadow-sm submit-btn">
-                            Send Reply <i class="bi bi-send ms-2"></i>
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn text-white px-3 shadow-sm" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); border: none;" data-bs-toggle="modal" data-bs-target="#aiReplyModal">
+                                <i class="bi bi-magic me-1"></i> Generate with AI
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm submit-btn">
+                                Send Reply <i class="bi bi-send ms-2"></i>
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
