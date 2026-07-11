@@ -123,6 +123,42 @@
                     Settings
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                    <i class="bi bi-people sidebar-icon"></i>
+                    User Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('teams.*') ? 'active' : '' }}" href="{{ route('teams.index') }}">
+                    <i class="bi bi-diagram-3 sidebar-icon"></i>
+                    Team Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('companies.*') ? 'active' : '' }}" href="{{ route('companies.index') }}">
+                    <i class="bi bi-building sidebar-icon"></i>
+                    Company Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                    <i class="bi bi-person-badge sidebar-icon"></i>
+                    Role Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('permissions.*') ? 'active' : '' }}" href="{{ route('permissions.index') }}">
+                    <i class="bi bi-shield-lock sidebar-icon"></i>
+                    Permission Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('import-export.*') ? 'active' : '' }}" href="{{ route('import-export.index') }}">
+                    <i class="bi bi-arrow-left-right sidebar-icon"></i>
+                    Import / Export
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
