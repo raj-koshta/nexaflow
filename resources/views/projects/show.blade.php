@@ -199,10 +199,138 @@
     </div>
 </div>
 
+<!-- AI Task Generator Modal -->
+<div class="modal fade" id="aiTaskModal" tabindex="-1" aria-labelledby="aiTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border: var(--glass-border) !important; border-radius: 20px; overflow: hidden;">
+            <div class="row g-0">
+                <div class="col-md-5 d-none d-md-block" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(236, 72, 153, 0.05)); border-right: 1px solid var(--border-color);">
+                    <div class="d-flex flex-column justify-content-center h-100 p-5 text-center">
+                        <div class="mb-4">
+                            <i class="bi bi-robot" style="font-size: 3.5rem; background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 6px rgba(139,92,246,0.3));"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">AI Task Generator</h4>
+                        <p class="text-muted small mb-0" style="line-height: 1.6;">Our intelligent assistant will analyze your project goals and instantly create a structured list of actionable tasks, complete with priority levels and time estimates.</p>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="modal-header border-bottom-0 pb-0 pt-4 px-4">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--close-btn-filter);"></button>
+                    </div>
+                    <div class="modal-body p-4 pt-2">
+                        <div class="d-md-none mb-4 text-center">
+                            <h5 class="fw-bold" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                                <i class="bi bi-robot me-2"></i>AI Task Generator
+                            </h5>
+                            <p class="text-muted small">Analyze project goals and generate actionable tasks.</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="ai_task_intent" class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing: 1px;">Project Context & Goals</label>
+                            <textarea class="form-control bg-transparent text-main border-secondary border-opacity-25 focus-ring focus-ring-primary p-3" id="ai_task_intent" rows="6" placeholder="Describe the project... e.g. Build a comprehensive dashboard with analytics, user management, and settings." style="border-radius: 12px; resize: none; line-height: 1.5;">{{ $project->description }}</textarea>
+                            <div class="form-text small mt-2 text-muted"><i class="bi bi-info-circle me-1 text-primary"></i> The more details you provide, the better the generated tasks will be.</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-2">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn text-white rounded-pill px-4 shadow-sm d-flex align-items-center btn-hover-grow" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); border: none;" id="btn-generate-ai-tasks">
+                                <i class="bi bi-magic me-2"></i> Generate Magic
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task Quick View Modal -->
+<div class="modal fade" id="taskQuickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content border-0 shadow-lg" style="border: var(--glass-border) !important; border-radius: 16px; overflow: hidden;">
+            <div id="taskQuickViewContent">
+                <!-- Content loaded via AJAX -->
+                <div class="p-5 text-center text-muted">
+                    <div class="spinner-border mb-3" role="status"></div>
+                    <div>Loading task details...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('custom-scripts')
 <script>
+    // Task Quick View
+    $(document).on('click', '.quick-view-task-btn', function(e) {
+        e.preventDefault();
+        const url = $(this).data('url');
+        
+        $('#taskQuickViewContent').html(`
+            <div class="p-5 text-center text-muted">
+                <div class="spinner-border mb-3" role="status"></div>
+                <div>Loading task details...</div>
+            </div>
+        `);
+        
+        const modal = new bootstrap.Modal(document.getElementById('taskQuickViewModal'));
+        modal.show();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                $('#taskQuickViewContent').html(response);
+            },
+            error: function() {
+                $('#taskQuickViewContent').html(`
+                    <div class="p-5 text-center text-danger">
+                        <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+                        <h5>Error loading task details</h5>
+                        <p class="text-muted">Please try again.</p>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                `);
+            }
+        });
+    });
+
+    // AI Task Generator
+    $('#btn-generate-ai-tasks').off('click').on('click', function(e) {
+        e.preventDefault();
+        const intent = $('#ai_task_intent').val().trim();
+        
+        if (!intent) {
+            showToast('Error', 'Please provide project context first.', 'error');
+            return;
+        }
+
+        const $btn = $(this);
+        const originalHtml = $btn.html();
+        
+        $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Generating...');
+        
+        $.ajax({
+            url: "{{ route('projects.ai-tasks', $project->id) }}",
+            type: 'POST',
+            data: { 
+                _token: '{{ csrf_token() }}',
+                intent: intent
+            },
+            success: function(res) {
+                showToast('Success', res.message, 'success');
+                $('#aiTaskModal').modal('hide');
+                setTimeout(() => location.reload(), 1000);
+            },
+            error: function(xhr) {
+                $btn.prop('disabled', false).html(originalHtml);
+                showToast('Error', xhr.responseJSON?.message || 'Failed to generate tasks.', 'error');
+            }
+        });
+    });
+
     // Kanban Board SortableJS Initialization
     $(document).ready(function() {
         const kanbanCols = document.querySelectorAll('.kanban-column');

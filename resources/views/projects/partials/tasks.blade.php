@@ -1,8 +1,13 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h5 class="fw-bold mb-0">Tasks</h5>
-    <button class="btn btn-sm btn-primary" onclick="openTaskOffcanvas()">
-        <i class="bi bi-plus-lg me-1"></i> Add Task
-    </button>
+    <div class="d-flex gap-2">
+        <button class="btn btn-sm text-white px-3 shadow-sm" style="background: linear-gradient(135deg, #8b5cf6, #ec4899); border: none;" data-bs-toggle="modal" data-bs-target="#aiTaskModal">
+            <i class="bi bi-stars me-1"></i> Generate with AI
+        </button>
+        <button class="btn btn-sm btn-primary" onclick="openTaskOffcanvas()">
+            <i class="bi bi-plus-lg me-1"></i> Add Task
+        </button>
+    </div>
 </div>
 
 <div class="card shadow-sm border-0" style="background: var(--card-bg); border: var(--glass-border);">
@@ -59,6 +64,9 @@
                             <span class="badge bg-{{ $sColor }} bg-opacity-10 text-{{ $sColor }} border border-{{ $sColor }} border-opacity-25 rounded-pill px-2">{{ $task->status }}</span>
                         </td>
                         <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-link text-primary p-1 quick-view-task-btn" data-url="{{ route('tasks.show', $task->id) }}" title="Quick View Task">
+                                <i class="bi bi-eye fs-5"></i>
+                            </button>
                             <button class="btn btn-sm btn-link text-muted edit-task-btn p-1" data-task="{{ json_encode($task) }}">
                                 <i class="bi bi-pencil-square fs-5"></i>
                             </button>

@@ -111,6 +111,33 @@ class AiService
             return "Here is a recommended checklist for a website redesign project:\n\n1. **Discovery & Planning** (Define goals, target audience, sitemap)\n2. **Wireframing & UI/UX Design** (Create mockups, finalize color scheme)\n3. **Content Creation** (Draft copy, gather high-res images)\n4. **Development** (Setup staging, build templates, integrate CMS)\n5. **Testing** (Mobile responsiveness, cross-browser, QA)\n6. **Launch & Handover** (Go live, monitor performance)\n\nI can automatically create these as tasks in a new Project if you'd like.";
         }
 
+        // Intent: AI Task Generator
+        if (Str::contains($prompt, ['raw json array'])) {
+            return '[
+                {"title": "Requirement Gathering", "description": "Meet with stakeholders to understand the core requirements and project scope.", "priority": "High", "estimated_hours": 4},
+                {"title": "UI/UX Design", "description": "Design wireframes and high-fidelity mockups for the main screens.", "priority": "High", "estimated_hours": 12},
+                {"title": "Database Schema", "description": "Design the initial database schema and migrations.", "priority": "Medium", "estimated_hours": 6},
+                {"title": "Frontend Development", "description": "Implement the design using the chosen frontend framework.", "priority": "Medium", "estimated_hours": 20},
+                {"title": "Backend Integration", "description": "Connect frontend forms and pages to the backend APIs.", "priority": "High", "estimated_hours": 15},
+                {"title": "QA & Testing", "description": "Perform comprehensive testing across browsers and devices.", "priority": "Urgent", "estimated_hours": 8}
+            ]';
+        }
+
+        // Intent: AI Email Generator
+        if (Str::contains($prompt, ['expert copywriter and professional assistant'])) {
+            return "Subject: Update Regarding Your Recent Request\n\nDear Client,\n\nI hope this email finds you well.\n\nI am writing to follow up on your recent request. We have reviewed the details and our team is currently working on the implementation. We anticipate having a preliminary version ready for your review by the end of this week.\n\nPlease let us know if you have any additional questions or if there is anything else we can assist you with in the meantime.\n\nBest regards,\n\nYour NexaFlow Team";
+        }
+
+        // Intent: AI Ticket Assistant - Summarize
+        if (Str::contains($prompt, ['summarize the following support ticket thread'])) {
+            return "Here is a quick summary of this ticket:\n\n- The user reported an issue or made a request.\n- Initial troubleshooting was attempted.\n- The client is waiting for a resolution or further update.\n\n*(Note: Add GEMINI_API_KEY to generate a real context-aware summary!)*";
+        }
+
+        // Intent: AI Ticket Assistant - Reply
+        if (Str::contains($prompt, ['draft response based on this intent'])) {
+            return "Hi there,\n\nThank you for reaching out! I want to let you know that we have received your ticket and are currently reviewing it based on your latest update.\n\nWe will get back to you very soon with a solution.\n\nBest regards,\nSupport Team\n\n*(Note: Add GEMINI_API_KEY to generate a real response!)*";
+        }
+
         if (Str::contains($prompt, ['hello', 'hi', 'hey'])) {
             return "Hello " . \Illuminate\Support\Facades\Auth::user()->name . "! I am NexaFlow's AI Assistant. How can I help you manage your business today?\n\n*(Note: I am running in mock mode. Add GEMINI_API_KEY to your .env file to enable real AI responses!)*";
         }

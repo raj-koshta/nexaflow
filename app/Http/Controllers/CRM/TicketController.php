@@ -49,12 +49,13 @@ class TicketController extends Controller
         return view('tickets.index', compact('clients', 'users', 'tickets'));
     }
 
-    public function show(Ticket $ticket)
+    public function show(Request $request, Ticket $ticket)
     {
         $ticket->load(['client', 'assignee', 'creator', 'replies.user']);
         
-        // We will need users for reassignment dropdowns if we add them later, 
-        // but for now we just show the ticket details.
+        if ($request->ajax()) {
+            return view('tickets.partials.quick-view', compact('ticket'))->render();
+        }
         
         return view('tickets.show', compact('ticket'));
     }
@@ -110,6 +111,59 @@ class TicketController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Ticket deleted successfully.'
+        ]);
+    }
+
+    /**
+     * AI Ticket Assistant: Summarize the ticket thread.
+     */
+    public function aiSummarize(Request $request, Ticket $ticket, \App\Services\AI\AiService $aiService)
+    {
+        $ticket->load('replies.user');
+        
+        $thread = "Subject: " . $ticket->subject . "\n";
+        $thread .= "Description: " . $ticket->description . "\n";
+        foreach ($ticket->replies as $reply) {
+            $thread .= "Reply from " . ($reply->user->name ?? 'System') . ": " . $reply->message . "\n";
+        }
+        
+        $prompt = "Summarize the following support ticket thread into a concise bullet-point summary:\n\n" . $thread;
+        $summary = $aiService->generateResponse($prompt);
+        
+        $ticket->replies()->create([
+            'user_id' => auth()->id(),
+            'message' => "**[AI Summary]**\n" . $summary,
+            'is_internal' => true,
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket summarized successfully.'
+        ]);
+    }
+
+    /**
+     * AI Ticket Assistant: Generate a draft reply based on user intent.
+     */
+    public function aiGenerateReply(Request $request, Ticket $ticket, \App\Services\AI\AiService $aiService)
+    {
+        $request->validate(['intent' => 'required|string|max:500']);
+        
+        $thread = "Subject: " . $ticket->subject . "\n";
+        $thread .= "Description: " . $ticket->description . "\n";
+        if ($ticket->replies()->count() > 0) {
+            $lastReply = $ticket->replies()->latest()->first();
+            $thread .= "Latest Update: " . $lastReply->message . "\n";
+        }
+        
+        $prompt = "You are a professional customer support agent for NexaFlow. The customer opened this ticket:\n\n" . $thread;
+        $prompt .= "\n\nPlease write a polite, professional draft response based on this intent: " . $request->intent;
+        
+        $draft = $aiService->generateResponse($prompt);
+        
+        return response()->json([
+            'success' => true,
+            'draft' => $draft
         ]);
     }
 }
