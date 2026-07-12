@@ -9,6 +9,10 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
     }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
     .stat-icon-wrapper {
         width: 48px;
         height: 48px;
@@ -36,6 +40,12 @@
         background-color: var(--border-color);
         border-radius: 10px;
     }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
 </style>
 @endpush
 
@@ -43,81 +53,100 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4">
     <div>
         <h1 class="h2 fw-bold mb-0">Dashboard</h1>
-        <p class="text-muted mb-0">Welcome back! Here's what's happening today.</p>
+        <p class="text-muted mb-0">Welcome back, {{ auth()->user()->name }}! Here's your overview.</p>
     </div>
     <div class="btn-toolbar mb-2 mb-md-0 gap-2">
         <button type="button" class="btn btn-outline-primary shadow-sm" onclick="location.href='{{ route('activities.index') }}'">
             <i class="bi bi-activity me-1"></i> Log Activity
         </button>
-        <button type="button" class="btn btn-primary shadow-sm" onclick="location.href='{{ route('follow-ups.index') }}'">
-            <i class="bi bi-plus-lg me-1"></i> Schedule Follow Up
+        <button type="button" class="btn btn-primary shadow-sm" onclick="location.href='{{ route('tasks.index') }}'">
+            <i class="bi bi-plus-lg me-1"></i> New Task
         </button>
     </div>
 </div>
 
-<!-- Key Metrics Row -->
-<div class="row g-4 mb-4">
-    <!-- Total Clients -->
-    <div class="col-sm-6 col-xl-3">
-        <div class="card stat-card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-3">
+<!-- AI Recommendation Widget -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 bg-primary bg-opacity-10" style="border: 1px solid rgba(var(--bs-primary-rgb), 0.2);">
+            <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3 p-4">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-md bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style="width: 48px; height: 48px;">
+                        <i class="bi bi-robot fs-4"></i>
+                    </div>
                     <div>
-                        <h6 class="text-muted fw-semibold mb-1">Total Clients</h6>
-                        <h2 class="fw-bold mb-0 text-main">{{ $metrics['clients']['total'] }}</h2>
-                    </div>
-                    <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary">
-                        <i class="bi bi-building"></i>
+                        <h5 class="fw-bold text-primary mb-1">NexaFlow AI Tip</h5>
+                        <p class="mb-0 text-muted" id="aiTipText">You have {{ $metrics['tasks']['pending'] }} pending tasks and {{ $metrics['tickets']['open'] }} open tickets. Consider prioritizing critical support tickets today.</p>
                     </div>
                 </div>
-                <div class="d-flex align-items-center text-sm">
-                    <span class="badge bg-success bg-opacity-10 text-success me-2">
-                        <i class="bi bi-arrow-up-right me-1"></i>{{ $metrics['clients']['new_this_month'] }}
-                    </span>
-                    <span class="text-muted small">New this month</span>
-                </div>
+                <a href="{{ route('ai.insights.index') }}" class="btn btn-primary btn-sm px-4 rounded-pill">View Full Insights</a>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Active Clients -->
+<!-- Key Metrics Row 1 -->
+<div class="row g-4 mb-4">
+    <!-- Active Projects -->
     <div class="col-sm-6 col-xl-3">
         <div class="card stat-card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <h6 class="text-muted fw-semibold mb-1">Active Clients</h6>
-                        <h2 class="fw-bold mb-0 text-main">{{ $metrics['clients']['active'] }}</h2>
+                        <h6 class="text-muted fw-semibold mb-1">Active Projects</h6>
+                        <h2 class="fw-bold mb-0 text-main">{{ $metrics['projects']['active'] }}</h2>
                     </div>
-                    <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success">
-                        <i class="bi bi-check-circle"></i>
+                    <div class="stat-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-briefcase"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center text-sm">
                     <span class="text-muted small">
-                        <span class="fw-medium text-main">{{ $metrics['clients']['inactive'] }}</span> inactive
+                        Out of <span class="fw-bold">{{ $metrics['projects']['total'] }}</span> total
                     </span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Leads -->
+    <!-- Pending Tasks -->
     <div class="col-sm-6 col-xl-3">
         <div class="card stat-card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <h6 class="text-muted fw-semibold mb-1">Total Leads</h6>
-                        <h2 class="fw-bold mb-0 text-main">{{ $metrics['leads']['total'] }}</h2>
+                        <h6 class="text-muted fw-semibold mb-1">Pending Tasks</h6>
+                        <h2 class="fw-bold mb-0 text-main">{{ $metrics['tasks']['pending'] }}</h2>
                     </div>
                     <div class="stat-icon-wrapper bg-warning bg-opacity-10 text-warning">
-                        <i class="bi bi-funnel"></i>
+                        <i class="bi bi-list-check"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-center text-sm">
-                    <span class="badge bg-primary bg-opacity-10 text-primary me-2">
-                        {{ $metrics['leads']['converted'] }} Converted
+                    <span class="text-muted small">
+                        <span class="text-success fw-bold">{{ $metrics['tasks']['completed'] }}</span> completed
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Tickets -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card stat-card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h6 class="text-muted fw-semibold mb-1">Open Tickets</h6>
+                        <h2 class="fw-bold mb-0 {{ $metrics['tickets']['open'] > 0 ? 'text-danger' : 'text-main' }}">{{ $metrics['tickets']['open'] }}</h2>
+                    </div>
+                    <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-ticket-detailed"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center text-sm">
+                    <span class="badge bg-success bg-opacity-10 text-success me-2">
+                        {{ $metrics['tickets']['resolved'] }} Resolved
                     </span>
                 </div>
             </div>
@@ -130,7 +159,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <h6 class="text-muted fw-semibold mb-1">Conversion Rate</h6>
+                        <h6 class="text-muted fw-semibold mb-1">Lead Conversion Rate</h6>
                         <h2 class="fw-bold mb-0 text-main">{{ $metrics['leads']['conversion_rate'] }}%</h2>
                     </div>
                     <div class="stat-icon-wrapper bg-info bg-opacity-10 text-info">
@@ -145,113 +174,124 @@
     </div>
 </div>
 
-<div class="row g-4">
-    <!-- Today's Agenda (Follow Ups & Meetings) -->
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Growth Chart -->
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
-            <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center" style="border-color: var(--border-color) !important;">
-                <h5 class="fw-bold mb-0"><i class="bi bi-calendar-event me-2 text-primary"></i>Today's Agenda</h5>
-                <span class="badge bg-primary rounded-pill">{{ $metrics['follow_ups']['today_count'] }} Tasks</span>
+            <div class="card-header bg-transparent border-bottom p-4">
+                <h5 class="fw-bold mb-0">Client & Lead Growth (Last 6 Months)</h5>
             </div>
-            <div class="card-body p-0">
-                @if(count($metrics['follow_ups']['today_list']) > 0)
-                    <div class="list-group list-group-flush">
-                        @foreach($metrics['follow_ups']['today_list'] as $followUp)
-                        <div class="list-group-item p-4 bg-transparent border-bottom" style="border-color: var(--border-color) !important;">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                <div>
-                                    <div class="d-flex align-items-center mb-1">
-                                        @if($followUp->follow_time)
-                                            <span class="text-danger fw-bold me-3" style="font-size: 0.9rem;">
-                                                <i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::parse($followUp->follow_time)->format('h:i A') }}
-                                            </span>
-                                        @endif
-                                        
-                                        @if($followUp->client)
-                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill">
-                                                Client: {{ $followUp->client->company_name }}
-                                            </span>
-                                        @elseif($followUp->lead)
-                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">
-                                                Lead: {{ $followUp->lead->name }}
-                                            </span>
-                                        @endif
-                                    </div>
-                                    <p class="mb-0 text-main fw-medium">{{ $followUp->remarks ?: 'No specific remarks provided.' }}</p>
-                                </div>
-                                <button class="btn btn-outline-success btn-sm rounded-pill px-3 mark-complete-btn" data-id="{{ $followUp->id }}">
-                                    <i class="bi bi-check2 me-1"></i>Complete
-                                </button>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="text-center p-5 text-muted">
-                        <i class="bi bi-check2-circle fs-1 opacity-50 mb-3 d-block"></i>
-                        <p class="mb-0">You're all caught up for today!</p>
-                    </div>
-                @endif
-                
-                @if($metrics['follow_ups']['today_count'] > 5)
-                <div class="p-3 text-center border-top" style="border-color: var(--border-color) !important;">
-                    <a href="{{ route('follow-ups.index', ['category' => 'today']) }}" class="text-decoration-none">View all {{ $metrics['follow_ups']['today_count'] }} tasks <i class="bi bi-arrow-right ms-1"></i></a>
+            <div class="card-body p-4">
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
                 </div>
-                @endif
             </div>
         </div>
     </div>
-
-    <!-- Upcoming Meetings -->
+    
+    <!-- Project Status Doughnut -->
     <div class="col-lg-4">
         <div class="card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
-            <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center" style="border-color: var(--border-color) !important;">
-                <h5 class="fw-bold mb-0"><i class="bi bi-people me-2 text-success"></i>Upcoming Meetings</h5>
-                <span class="badge bg-success rounded-pill">{{ $metrics['meetings']['upcoming_count'] }}</span>
+            <div class="card-header bg-transparent border-bottom p-4">
+                <h5 class="fw-bold mb-0">Project Status</h5>
             </div>
-            <div class="card-body p-4">
-                @if(count($metrics['meetings']['upcoming_list']) > 0)
-                    <div class="timeline-widget pe-2">
-                        @foreach($metrics['meetings']['upcoming_list'] as $meeting)
-                        <div class="d-flex mb-4">
-                            <div class="me-3 text-center" style="min-width: 50px;">
-                                <div class="text-muted fw-bold" style="font-size: 0.8rem;">{{ $meeting->activity_date->format('M') }}</div>
-                                <div class="text-main fw-bold fs-5 lh-1">{{ $meeting->activity_date->format('d') }}</div>
-                            </div>
-                            <div class="p-3 rounded w-100 border" style="background: var(--secondary-bg); border-color: var(--border-color) !important;">
-                                <h6 class="fw-bold mb-1">{{ $meeting->title }}</h6>
-                                <p class="text-muted small mb-0">
-                                    <i class="bi bi-clock me-1"></i>{{ $meeting->activity_date->format('h:i A') }}
-                                </p>
-                                @if($meeting->client)
-                                    <div class="small mt-2"><i class="bi bi-building me-1 text-muted"></i>{{ $meeting->client->company_name }}</div>
-                                @elseif($meeting->lead)
-                                    <div class="small mt-2"><i class="bi bi-person me-1 text-muted"></i>{{ $meeting->lead->name }}</div>
-                                @endif
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="text-center py-4 text-muted">
-                        <i class="bi bi-calendar-x fs-1 opacity-50 mb-3 d-block"></i>
-                        <p class="mb-0">No upcoming meetings scheduled.</p>
-                    </div>
-                @endif
+            <div class="card-body p-4 d-flex justify-content-center align-items-center">
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="projectChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Global Recent Activity -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card shadow-sm border-0" style="background: var(--card-bg); border: var(--glass-border);">
-            <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center" style="border-color: var(--border-color) !important;">
-                <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-info"></i>Recent Global Activity</h5>
-                <a href="{{ route('activities.index') }}" class="btn btn-sm btn-outline-secondary">View Timeline</a>
+<!-- Widgets Row -->
+<div class="row g-4">
+    <!-- My Tasks -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
+            <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0"><i class="bi bi-ui-checks me-2 text-primary"></i>My Tasks</h5>
+                <a href="{{ route('tasks.index') }}" class="text-muted small text-decoration-none">View All</a>
             </div>
-            <div class="card-body p-4 timeline-widget" style="max-height: 500px;">
+            <div class="card-body p-0">
+                @if(count($metrics['tasks']['my_tasks']) > 0)
+                    <div class="list-group list-group-flush">
+                        @foreach($metrics['tasks']['my_tasks'] as $task)
+                        <a href="{{ route('tasks.show', $task) }}" class="list-group-item list-group-item-action p-3 bg-transparent border-bottom" style="border-color: var(--border-color) !important;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 text-main fw-medium">{{ $task->title }}</h6>
+                                    @if($task->project)
+                                        <div class="small text-muted"><i class="bi bi-briefcase me-1"></i>{{ $task->project->title }}</div>
+                                    @endif
+                                </div>
+                                @if($task->due_date)
+                                    <span class="badge {{ \Carbon\Carbon::parse($task->due_date)->isPast() ? 'bg-danger' : 'bg-secondary' }} rounded-pill">
+                                        {{ \Carbon\Carbon::parse($task->due_date)->format('M d') }}
+                                    </span>
+                                @endif
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center p-5 text-muted">
+                        <i class="bi bi-check-all fs-1 opacity-50 mb-3 d-block"></i>
+                        <p class="mb-0">No tasks assigned to you!</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Tickets -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
+            <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0"><i class="bi bi-ticket-detailed me-2 text-danger"></i>Open Tickets</h5>
+                <a href="{{ route('tickets.index', ['status' => 'Open']) }}" class="text-muted small text-decoration-none">View All</a>
+            </div>
+            <div class="card-body p-0">
+                @if(count($metrics['tickets']['critical_list']) > 0)
+                    <div class="list-group list-group-flush">
+                        @foreach($metrics['tickets']['critical_list'] as $ticket)
+                        <a href="{{ route('tickets.show', $ticket) }}" class="list-group-item list-group-item-action p-3 bg-transparent border-bottom" style="border-color: var(--border-color) !important;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 text-main fw-medium text-truncate" style="max-width: 200px;">{{ $ticket->subject }}</h6>
+                                    <div class="small text-muted">{{ $ticket->client->company_name ?? 'Unknown' }}</div>
+                                </div>
+                                @php
+                                    $pColor = 'secondary';
+                                    if($ticket->priority == 'High') $pColor = 'warning';
+                                    if($ticket->priority == 'Urgent') $pColor = 'danger';
+                                @endphp
+                                <span class="badge bg-{{ $pColor }} bg-opacity-10 text-{{ $pColor }} rounded-pill">
+                                    {{ $ticket->priority }}
+                                </span>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center p-5 text-muted">
+                        <i class="bi bi-inbox fs-1 opacity-50 mb-3 d-block"></i>
+                        <p class="mb-0">No open tickets. Great job!</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Global Activity -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: var(--card-bg); border: var(--glass-border);">
+            <div class="card-header bg-transparent border-bottom p-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-info"></i>Recent Activity</h5>
+                <a href="{{ route('activities.index') }}" class="text-muted small text-decoration-none">Timeline</a>
+            </div>
+            <div class="card-body p-4 timeline-widget" style="max-height: 400px;">
                 @if(count($metrics['activities']['latest']) > 0)
                     <div class="position-relative ms-3">
                         <div class="position-absolute top-0 bottom-0 border-start" style="left: -1px; border-color: var(--border-color) !important; border-width: 2px !important;"></div>
@@ -270,27 +310,15 @@
                         @endphp
                         
                         <div class="position-relative mb-4 ps-4">
-                            <div class="position-absolute bg-{{ $color }} text-white rounded-circle d-flex align-items-center justify-content-center" 
+                            <div class="position-absolute bg-{{ $color }} text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
                                  style="left: -16px; width: 32px; height: 32px; top: 0; z-index: 2;">
                                 <i class="bi {{ $icon }} small"></i>
                             </div>
                             
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6 class="fw-bold mb-1">{{ $activity->title }}</h6>
-                                    <div class="d-flex gap-2 flex-wrap mb-1 align-items-center">
-                                        <span class="badge bg-{{ $color }} bg-opacity-10 text-{{ $color }} border border-{{ $color }} border-opacity-25 rounded-pill px-2" style="font-size: 0.7rem;">
-                                            {{ $activity->type }}
-                                        </span>
-                                        @if($activity->client)
-                                            <span class="text-muted small"><i class="bi bi-building me-1"></i>{{ $activity->client->company_name }}</span>
-                                        @elseif($activity->lead)
-                                            <span class="text-muted small"><i class="bi bi-funnel me-1"></i>{{ $activity->lead->name }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <span class="text-muted small" title="{{ $activity->activity_date->format('Y-m-d H:i') }}">
-                                    {{ $activity->activity_date->diffForHumans() }}
+                            <div>
+                                <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">{{ $activity->title }}</h6>
+                                <span class="text-muted" style="font-size: 0.75rem;" title="{{ $activity->activity_date->format('Y-m-d H:i') }}">
+                                    {{ $activity->activity_date->diffForHumans() }} by {{ $activity->creator->name ?? 'System' }}
                                 </span>
                             </div>
                         </div>
@@ -309,34 +337,111 @@
 
 @push('custom-scripts')
 <script>
-    // Mark Follow Up as Completed from Dashboard
-    $(document).on('click', '.mark-complete-btn', function(e) {
-        e.preventDefault();
-        const id = $(this).data('id');
-        const $btn = $(this);
-        const originalContent = $btn.html();
-        
-        $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
-        
-        $.ajax({
-            url: `/follow-ups/${id}/complete`,
-            type: 'POST',
-            success: function(response) {
-                showToast('Success', response.message, 'success');
-                // Remove the item from the list with a nice animation
-                $btn.closest('.list-group-item').slideUp(300, function() {
-                    $(this).remove();
-                    // Optionally, reload the page to refresh metrics if list is empty
-                    if($('.list-group-item').length === 0) {
-                        location.reload();
-                    }
-                });
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // Get CSS Variables for consistent theming
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const textColor = isDark ? '#adb5bd' : '#6c757d';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+    
+    Chart.defaults.color = textColor;
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    // Growth Chart
+    const growthCtx = document.getElementById('growthChart').getContext('2d');
+    const growthChartData = @json($metrics['charts']['growth']);
+    
+    new Chart(growthCtx, {
+        type: 'line',
+        data: {
+            labels: growthChartData.labels,
+            datasets: [
+                {
+                    label: 'New Clients',
+                    data: growthChartData.clients,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'New Leads',
+                    data: growthChartData.leads,
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.4,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
             },
-            error: function(xhr) {
-                showToast('Error', xhr.responseJSON?.message || 'Error completing follow up', 'error');
-                $btn.html(originalContent).prop('disabled', false);
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: gridColor,
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
+                }
             }
-        });
+        }
     });
+
+    // Project Status Chart
+    const projectCtx = document.getElementById('projectChart').getContext('2d');
+    const projectChartData = @json($metrics['charts']['projects']);
+    
+    new Chart(projectCtx, {
+        type: 'doughnut',
+        data: {
+            labels: projectChartData.labels,
+            datasets: [{
+                data: projectChartData.data,
+                backgroundColor: [
+                    '#6c757d', // Not Started
+                    '#3b82f6', // In Progress
+                    '#f59e0b', // On Hold
+                    '#10b981'  // Completed
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            }
+        }
+    });
+});
 </script>
 @endpush

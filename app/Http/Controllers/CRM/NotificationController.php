@@ -14,14 +14,37 @@ class NotificationController extends Controller
     {
         $user = $request->user();
         
-        $unread = $user->unreadNotifications;
-        $read = $user->readNotifications()->take(10)->get(); // Get recent read ones
-        
-        return response()->json([
-            'unread' => $unread,
-            'read' => $read,
-            'unread_count' => $unread->count(),
-        ]);
+        if ($request->wantsJson() || $request->ajax()) {
+            $unread = $user->unreadNotifications;
+            $read = $user->readNotifications()->take(10)->get();
+            
+            return response()->json([
+                'unread' => $unread,
+                'read' => $read,
+                'unread_count' => $unread->count(),
+            ]);
+        }
+
+        // Full Page Request
+        $tab = $request->query('tab', 'all');
+        $query = $user->notifications();
+
+        if ($tab === 'unread') {
+            $query->whereNull('read_at');
+        } elseif ($tab === 'read') {
+            $query->whereNotNull('read_at');
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            // Filter by data inside JSON column for MySQL/PostgreSQL/SQLite
+            $query->where('data', 'like', "%{$search}%");
+        }
+
+        $notifications = $query->paginate(15)->appends($request->query());
+        $unreadCount = $user->unreadNotifications()->count();
+
+        return view('notifications.index', compact('notifications', 'tab', 'unreadCount'));
     }
 
     /**
