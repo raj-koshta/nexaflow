@@ -127,6 +127,11 @@ class AiService
         if (Str::contains($prompt, ['expert copywriter and professional assistant'])) {
             return "Subject: Update Regarding Your Recent Request\n\nDear Client,\n\nI hope this email finds you well.\n\nI am writing to follow up on your recent request. We have reviewed the details and our team is currently working on the implementation. We anticipate having a preliminary version ready for your review by the end of this week.\n\nPlease let us know if you have any additional questions or if there is anything else we can assist you with in the meantime.\n\nBest regards,\n\nYour NexaFlow Team";
         }
+        
+        // Intent: AI Meeting Notes
+        if (Str::contains($prompt, ['generate meeting notes based on this transcript', 'expert executive assistant'])) {
+            return "### 📝 Meeting Summary\n\nThe team discussed the upcoming Q3 product launch. Main focus areas were finalizing the marketing budget, aligning on the new UI mockup dates, and ensuring the backend infrastructure is ready for the expected traffic spike. The overall sentiment was positive and on-track.\n\n### ✅ Action Items\n\n- [ ] Finalize the marketing budget for Q3 (Marketing Team)\n- [ ] Approve the new UI mockups (Design Team)\n- [ ] Run stress tests on the backend servers (Engineering Team)\n- [ ] Schedule follow-up sync for next Thursday\n\n### ⏰ Deadlines\n\n- **Marketing Budget:** Next Friday\n- **UI Mockups:** End of the month\n- **Stress Tests:** Week of the 15th";
+        }
 
         // Intent: AI Ticket Assistant - Summarize
         if (Str::contains($prompt, ['summarize the following support ticket thread'])) {
