@@ -43,6 +43,9 @@
                     <!-- Injected via AJAX -->
                     <div class="text-center p-4 text-muted small" id="noNotificationsMsg">No new notifications</div>
                 </div>
+                <div class="p-2 border-top text-center" style="border-color: rgba(255,255,255,0.1) !important;">
+                    <a href="{{ route('notifications.index') }}" class="text-decoration-none small" style="color: var(--accent);">View All Notifications</a>
+                </div>
             </div>
         </div>
 
