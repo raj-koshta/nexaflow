@@ -183,7 +183,7 @@
 @push('custom-scripts')
 <script>
     $(document).ready(function() {
-        $('#emailGeneratorForm').on('submit', function(e) {
+        $('#emailGeneratorForm').off('submit').on('submit', function(e) {
             e.preventDefault();
             
             const $btn = $('#generateBtn');
@@ -222,7 +222,7 @@
         });
 
         // Copy functionality
-        $('#copyBtn').on('click', function() {
+        $('#copyBtn').off('click').on('click', function() {
             const emailText = $('#emailOutput').val();
             navigator.clipboard.writeText(emailText).then(function() {
                 const $btn = $('#copyBtn');
@@ -236,7 +236,7 @@
         });
 
         // Open Send Modal
-        $('#openSendModalBtn').on('click', function() {
+        $('#openSendModalBtn').off('click').on('click', function() {
             // Check if there is a generated subject to pre-fill
             const emailBody = $('#emailOutput').val();
             let subject = '';
@@ -258,7 +258,7 @@
         });
 
         // Actual Send logic
-        $('#sendEmailForm').on('submit', function(e) {
+        $('#sendEmailForm').off('submit').on('submit', function(e) {
             e.preventDefault();
             
             const $btn = $('#confirmSendBtn');

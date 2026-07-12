@@ -131,6 +131,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // AI Assistant
+    Route::get('ai/meeting-notes', [\App\Http\Controllers\AI\AiMeetingNotesController::class, 'index'])->name('ai.meetings.index');
+    Route::post('ai/meeting-notes/generate', [\App\Http\Controllers\AI\AiMeetingNotesController::class, 'generate'])->name('ai.meetings.generate');
+    Route::post('ai/meeting-notes/tasks', [\App\Http\Controllers\AI\AiMeetingNotesController::class, 'storeTasks'])->name('ai.meetings.tasks');
     Route::get('ai/email-generator', [\App\Http\Controllers\AI\AiEmailController::class, 'index'])->name('ai.email.index');
     Route::post('ai/email-generator/generate', [\App\Http\Controllers\AI\AiEmailController::class, 'generate'])->name('ai.email.generate');
     Route::post('ai/email-generator/send', [\App\Http\Controllers\AI\AiEmailController::class, 'send'])->name('ai.email.send');

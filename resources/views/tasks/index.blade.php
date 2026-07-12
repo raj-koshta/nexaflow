@@ -272,6 +272,9 @@
                                         <button class="btn btn-sm btn-link text-muted p-0 edit-task-btn" data-task="{{ json_encode($task) }}">
                                             <i class="bi bi-pencil"></i>
                                         </button>
+                                        <button class="btn btn-sm btn-link text-danger p-0 delete-task-btn" data-id="{{ $task->id }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 
