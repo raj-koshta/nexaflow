@@ -98,6 +98,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('ai.templates.*') ? 'active' : '' }}" href="{{ route('ai.templates.index') }}">
+                    <i class="bi bi-card-text sidebar-icon"></i>
+                    Prompt Templates
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('ai.insights.*') ? 'active' : '' }}" href="{{ route('ai.insights.index') }}">
                     <i class="bi bi-graph-up-arrow sidebar-icon"></i>
                     Business Insights
