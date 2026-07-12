@@ -97,6 +97,12 @@
                     Meeting Notes
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('ai.insights.*') ? 'active' : '' }}" href="{{ route('ai.insights.index') }}">
+                    <i class="bi bi-graph-up-arrow sidebar-icon"></i>
+                    Business Insights
+                </a>
+            </li>
 
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
                 <span>Intelligence</span>
