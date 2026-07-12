@@ -132,6 +132,11 @@ class AiService
         if (Str::contains($prompt, ['generate meeting notes based on this transcript', 'expert executive assistant'])) {
             return "### 📝 Meeting Summary\n\nThe team discussed the upcoming Q3 product launch. Main focus areas were finalizing the marketing budget, aligning on the new UI mockup dates, and ensuring the backend infrastructure is ready for the expected traffic spike. The overall sentiment was positive and on-track.\n\n### ✅ Action Items\n\n- [ ] Finalize the marketing budget for Q3 (Marketing Team)\n- [ ] Approve the new UI mockups (Design Team)\n- [ ] Run stress tests on the backend servers (Engineering Team)\n- [ ] Schedule follow-up sync for next Thursday\n\n### ⏰ Deadlines\n\n- **Marketing Budget:** Next Friday\n- **UI Mockups:** End of the month\n- **Stress Tests:** Week of the 15th";
         }
+        
+        // Intent: AI Business Insights
+        if (Str::contains($prompt, ['elite business strategy analyst', 'generate business insights'])) {
+            return "### 📊 Strategic Business Analysis\n\nBased on your current KPIs, here are your strategic insights for the week:\n\n**1. High Volume of Overdue Tasks**\nWith several overdue tasks, your delivery pipeline is currently bottlenecked. *Recommendation:* Consider running a quick standup meeting to unblock team members or reassign tasks from overloaded developers.\n\n**2. Support Queue Warning**\nYou have multiple open tickets. *Recommendation:* Reallocate one team member to support duty for the next 48 hours to bring the ticket queue back to inbox zero and maintain your SLA.\n\n**3. Revenue Trajectory**\nYour YTD Revenue of $124,500 is strong! *Recommendation:* You have the budget to safely scale. Consider hiring a junior support agent to permanently resolve the support queue issue.\n\n**Summary:** Focus on delivery and unblocking this week over taking on new active projects.";
+        }
 
         // Intent: AI Ticket Assistant - Summarize
         if (Str::contains($prompt, ['summarize the following support ticket thread'])) {
