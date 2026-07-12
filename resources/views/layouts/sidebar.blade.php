@@ -79,6 +79,12 @@
                 <span>AI Assistant</span>
             </h6>
             <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('ai.dashboard.*') ? 'active' : '' }}" href="{{ route('ai.dashboard.index') }}">
+                    <i class="bi bi-speedometer2 sidebar-icon"></i>
+                    AI Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('ai.chat.*') ? 'active' : '' }}" href="{{ route('ai.chat.index') }}">
                     <i class="bi bi-chat-dots sidebar-icon"></i>
                     AI Chat

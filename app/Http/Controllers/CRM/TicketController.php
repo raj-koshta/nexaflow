@@ -128,7 +128,7 @@ class TicketController extends Controller
         }
         
         $prompt = "Summarize the following support ticket thread into a concise bullet-point summary:\n\n" . $thread;
-        $summary = $aiService->generateResponse($prompt);
+        $summary = $aiService->generateResponse($prompt, 'Ticket Summary');
         
         $ticket->replies()->create([
             'user_id' => auth()->id(),
@@ -159,7 +159,7 @@ class TicketController extends Controller
         $prompt = "You are a professional customer support agent for NexaFlow. The customer opened this ticket:\n\n" . $thread;
         $prompt .= "\n\nPlease write a polite, professional draft response based on this intent: " . $request->intent;
         
-        $draft = $aiService->generateResponse($prompt);
+        $draft = $aiService->generateResponse($prompt, 'Ticket Reply');
         
         return response()->json([
             'success' => true,

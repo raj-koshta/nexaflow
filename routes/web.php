@@ -138,6 +138,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('ai/business-insights', [\App\Http\Controllers\AI\AiBusinessInsightsController::class, 'index'])->name('ai.insights.index');
     Route::post('ai/business-insights/generate', [\App\Http\Controllers\AI\AiBusinessInsightsController::class, 'generate'])->name('ai.insights.generate');
 
+    Route::get('ai/dashboard', [\App\Http\Controllers\AI\AiAnalyticsController::class, 'index'])->name('ai.dashboard.index');
+    
     Route::get('ai/report-generator', [\App\Http\Controllers\AI\AiReportController::class, 'index'])->name('ai.reports.index');
     Route::post('ai/report-generator/generate', [\App\Http\Controllers\AI\AiReportController::class, 'generate'])->name('ai.reports.generate');
 

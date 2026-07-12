@@ -42,7 +42,7 @@ class AiBusinessInsightsController extends Controller
             $userPrompt .= "\nProvide strategic recommendations based on these numbers.";
 
             $fullPrompt = $systemPrompt . "\n\n" . $userPrompt;
-            $result = $aiService->generateResponse($fullPrompt);
+            $result = $aiService->generateResponse($fullPrompt, 'Business Insights');
 
             return response()->json([
                 'success' => true,
