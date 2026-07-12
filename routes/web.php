@@ -141,6 +141,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('ai/report-generator', [\App\Http\Controllers\AI\AiReportController::class, 'index'])->name('ai.reports.index');
     Route::post('ai/report-generator/generate', [\App\Http\Controllers\AI\AiReportController::class, 'generate'])->name('ai.reports.generate');
 
+    Route::resource('ai/prompt-templates', \App\Http\Controllers\AI\AiPromptTemplateController::class)->names([
+        'index' => 'ai.templates.index',
+        'store' => 'ai.templates.store',
+        'update' => 'ai.templates.update',
+        'destroy' => 'ai.templates.destroy',
+    ])->except(['create', 'show', 'edit']);
+
     Route::get('ai/email-generator', [\App\Http\Controllers\AI\AiEmailController::class, 'index'])->name('ai.email.index');
     Route::post('ai/email-generator/generate', [\App\Http\Controllers\AI\AiEmailController::class, 'generate'])->name('ai.email.generate');
     Route::post('ai/email-generator/send', [\App\Http\Controllers\AI\AiEmailController::class, 'send'])->name('ai.email.send');
