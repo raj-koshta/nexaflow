@@ -46,7 +46,7 @@ class AiReportController extends Controller
             $userPrompt .= "\nFormat the report with clear headings (e.g., Executive Summary, Progress Made, Key Metrics, Blockers, Next Steps) and use checklists and bold text appropriately.";
 
             $fullPrompt = $systemPrompt . "\n\n" . $userPrompt;
-            $result = $aiService->generateResponse($fullPrompt);
+            $result = $aiService->generateResponse($fullPrompt, 'Report Generator');
 
             return response()->json([
                 'success' => true,

@@ -135,7 +135,7 @@ class ProjectController extends Controller
         $prompt .= "- 'estimated_hours' (integer)\n\n";
         $prompt .= "Do not include any markdown formatting, code blocks, or text outside of the JSON array.";
 
-        $jsonStr = $aiService->generateResponse($prompt);
+        $jsonStr = $aiService->generateResponse($prompt, 'Task Generator');
         
         // Clean up potential markdown formatting from AI just in case
         $jsonStr = str_replace(['```json', '```'], '', $jsonStr);

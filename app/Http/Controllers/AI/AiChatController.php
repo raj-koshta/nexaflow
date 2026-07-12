@@ -63,7 +63,7 @@ class AiChatController extends Controller
         $conversation->touch(); // Update timestamp
 
         // Get AI Response
-        $aiResponseText = $this->aiService->generateResponse($request->message);
+        $aiResponseText = $this->aiService->generateResponse($request->message, 'AI Chat');
 
         // Save AI Message
         $aiMessage = $conversation->messages()->create([

@@ -40,7 +40,7 @@ class AiMeetingNotesController extends Controller
             $userPrompt .= "\nTranscript:\n" . $validated['transcript'];
 
             $fullPrompt = $systemPrompt . "\n\n" . $userPrompt;
-            $result = $aiService->generateResponse($fullPrompt);
+            $result = $aiService->generateResponse($fullPrompt, 'Meeting Notes');
 
             return response()->json([
                 'success' => true,

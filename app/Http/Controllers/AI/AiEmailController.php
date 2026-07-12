@@ -42,7 +42,7 @@ class AiEmailController extends Controller
         $prompt .= "Return ONLY the email content. Do NOT include any markdown code blocks (like ```). Include a Subject line if one wasn't explicitly provided, prefixed with 'Subject: '. The rest of the output should just be the email body.";
 
         try {
-            $emailContent = $aiService->generateResponse($prompt);
+            $emailContent = $aiService->generateResponse($prompt, 'Email Generator');
             
             // Clean up any markdown blocks if the AI ignored the instruction
             $emailContent = preg_replace('/^```(?:text)?\s*/', '', $emailContent);

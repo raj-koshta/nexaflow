@@ -11,19 +11,44 @@ class AiService
     /**
      * Generates an AI response for the given prompt.
      */
-    public function generateResponse(string $prompt): string
+    public function generateResponse(string $prompt, string $featureName = 'Unknown'): string
     {
         $geminiKey = env('GEMINI_API_KEY');
         $openAiKey = env('OPENAI_API_KEY');
 
-        // Prefer Gemini (Free), fallback to OpenAI if set, else mock
-        if (!empty($geminiKey)) {
-            return $this->callGemini($geminiKey, $prompt);
-        } elseif (!empty($openAiKey)) {
-            return $this->callOpenAI($openAiKey, $prompt);
+        $startTime = microtime(true);
+        $response = null;
+        $isSuccessful = true;
+        $errorMessage = null;
+
+        try {
+            // Prefer Gemini (Free), fallback to OpenAI if set, else mock
+            if (!empty($geminiKey)) {
+                $response = $this->callGemini($geminiKey, $prompt);
+            } elseif (!empty($openAiKey)) {
+                $response = $this->callOpenAI($openAiKey, $prompt);
+            } else {
+                $response = $this->smartMockResponse($prompt);
+            }
+        } catch (\Exception $e) {
+            $isSuccessful = false;
+            $errorMessage = $e->getMessage();
+            $response = "Sorry, an unexpected error occurred.";
         }
 
-        return $this->smartMockResponse($prompt);
+        $processingTime = round((microtime(true) - $startTime) * 1000); // in ms
+
+        \App\Models\AiActivityLog::create([
+            'user_id' => auth()->id(),
+            'feature_name' => $featureName,
+            'prompt' => $prompt,
+            'response' => $response,
+            'processing_time' => $processingTime,
+            'is_successful' => $isSuccessful,
+            'error_message' => $errorMessage,
+        ]);
+
+        return $response;
     }
 
     private function callGemini(string $apiKey, string $prompt): string
