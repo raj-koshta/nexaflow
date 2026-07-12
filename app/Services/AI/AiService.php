@@ -138,6 +138,13 @@ class AiService
             return "### 📊 Strategic Business Analysis\n\nBased on your current KPIs, here are your strategic insights for the week:\n\n**1. High Volume of Overdue Tasks**\nWith several overdue tasks, your delivery pipeline is currently bottlenecked. *Recommendation:* Consider running a quick standup meeting to unblock team members or reassign tasks from overloaded developers.\n\n**2. Support Queue Warning**\nYou have multiple open tickets. *Recommendation:* Reallocate one team member to support duty for the next 48 hours to bring the ticket queue back to inbox zero and maintain your SLA.\n\n**3. Revenue Trajectory**\nYour YTD Revenue of $124,500 is strong! *Recommendation:* You have the budget to safely scale. Consider hiring a junior support agent to permanently resolve the support queue issue.\n\n**Summary:** Focus on delivery and unblocking this week over taking on new active projects.";
         }
 
+        // Intent: AI Report Generator
+        if (Str::contains($prompt, ['expert executive analyst', 'status report'])) {
+            $isMonthly = Str::contains($prompt, 'monthly');
+            $type = $isMonthly ? 'Monthly' : 'Weekly';
+            return "### 📊 $type Status Report\n\n**Date:** " . \Carbon\Carbon::now()->format('F j, Y') . "\n\n#### 🎯 Executive Summary\nThis $type, the team has made excellent progress across all major initiatives. We successfully shipped the new authentication flow and resolved several critical support tickets. Overall team velocity has increased by 15% compared to the previous period.\n\n#### ✅ Progress Made\n- Deployed the new User Dashboard UI\n- Closed 42 support tickets\n- Onboarded 3 new enterprise clients\n\n#### 📈 Key Metrics\n- **Uptime:** 99.99%\n- **Customer Satisfaction (CSAT):** 4.8/5\n- **Tasks Completed:** 124\n\n#### 🚧 Blockers & Risks\n- The third-party payment gateway integration is currently blocked awaiting API credentials.\n- Resource constraints in the QA team may delay the next minor release.\n\n#### 🚀 Next Steps\n- [ ] Finalize the payment gateway integration once credentials arrive\n- [ ] Hire an additional freelance QA engineer\n- [ ] Kick off the Q4 marketing campaign";
+        }
+
         // Intent: AI Ticket Assistant - Summarize
         if (Str::contains($prompt, ['summarize the following support ticket thread'])) {
             return "Here is a quick summary of this ticket:\n\n- The user reported an issue or made a request.\n- Initial troubleshooting was attempted.\n- The client is waiting for a resolution or further update.\n\n*(Note: Add GEMINI_API_KEY to generate a real context-aware summary!)*";

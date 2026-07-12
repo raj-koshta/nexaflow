@@ -31,8 +31,9 @@ class AiBusinessInsightsController extends Controller
         ]);
 
         try {
+            $currentDate = \Carbon\Carbon::now()->format('F j, Y');
             $systemPrompt = "You are an elite Business Strategy Analyst and AI Assistant for the NexaFlow CRM. Analyze the provided company KPIs and generate 3 to 4 actionable, strategic business insights in a beautiful Markdown format.";
-            $userPrompt = "Please generate business insights based on these current KPIs:\n";
+            $userPrompt = "Today's Date: {$currentDate}\nPlease generate business insights based on these current KPIs:\n";
             
             foreach ($validated['kpi_data'] as $key => $value) {
                 $userPrompt .= "- " . ucwords(str_replace('_', ' ', $key)) . ": " . $value . "\n";
