@@ -40,7 +40,21 @@ class SystemNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
+    }
+
+    /**
+     * Get the broadcastable representation of the notification.
+     */
+    public function toBroadcast(object $notifiable): \Illuminate\Notifications\Messages\BroadcastMessage
+    {
+        return new \Illuminate\Notifications\Messages\BroadcastMessage([
+            'title' => $this->title,
+            'message' => $this->message,
+            'icon' => $this->icon,
+            'type' => $this->type,
+            'link' => $this->link,
+        ]);
     }
 
     /**

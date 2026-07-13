@@ -59,7 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
         Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('readAll');
         Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
-        Route::post('/test', [NotificationController::class, 'testNotification'])->name('test');
+        Route::get('/test', [NotificationController::class, 'testNotification'])->name('test');
     });
 
     // Activity Logs

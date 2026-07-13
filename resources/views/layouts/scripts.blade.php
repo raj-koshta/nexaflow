@@ -12,6 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <!-- Global Script -->
+@vite('resources/js/app.js')
 <script>
     $.ajaxSetup({
         headers: {
@@ -134,6 +135,14 @@ $(document).ready(function() {
 
     // Initial fetch
     fetchNotifications();
+
+    if (typeof window.Echo !== 'undefined') {
+        window.Echo.private('App.Models.User.' + '{{ auth()->id() }}')
+            .notification((notification) => {
+                showToast(notification.title || 'New Notification', notification.message || '', notification.type === 'danger' ? 'error' : 'success');
+                fetchNotifications();
+            });
+    }
 
     // Mark as read on click
     $(document).on('click', '.notif-item.unread', function(e) {
