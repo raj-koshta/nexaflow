@@ -51,6 +51,9 @@
             </div>
             <div class="card-body">
                 @if($clientsByIndustry->count() > 0)
+                    <div class="mb-4" style="height: 250px;">
+                        <canvas id="industryChart"></canvas>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                             <tbody>
@@ -77,6 +80,9 @@
             </div>
             <div class="card-body">
                 @if($clientsByStatus->count() > 0)
+                    <div class="mb-4" style="height: 250px;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                             <tbody>
@@ -143,3 +149,62 @@
     </div>
 </div>
 @endsection
+
+@push('custom-scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Industry Chart
+        const industryData = {!! json_encode($clientsByIndustry) !!};
+        if (industryData.length > 0 && document.getElementById('industryChart')) {
+            const ctx = document.getElementById('industryChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: industryData.map(d => d.industry),
+                    datasets: [{
+                        data: industryData.map(d => d.total),
+                        backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981', '#3b82f6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: 'var(--text-main)' } }
+                    }
+                }
+            });
+        }
+
+        // Status Chart
+        const statusData = {!! json_encode($clientsByStatus) !!};
+        if (statusData.length > 0 && document.getElementById('statusChart')) {
+            const ctx2 = document.getElementById('statusChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: statusData.map(d => d.status),
+                    datasets: [{
+                        data: statusData.map(d => d.total),
+                        backgroundColor: statusData.map(d => {
+                            if (d.status === 'Active') return '#10b981';
+                            if (d.status === 'Inactive') return '#64748b';
+                            if (d.status === 'Churned') return '#ef4444';
+                            return '#94a3b8';
+                        }),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: 'var(--text-main)' } }
+                    }
+                }
+            });
+        }
+    });
+</script>
+@endpush

@@ -24,6 +24,10 @@ class ProjectService
     {
         $query = Project::query()->with('client');
 
+        if (isset($filters['trashed']) && $filters['trashed'] == '1') {
+            $query->onlyTrashed();
+        }
+
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function($q) use ($search) {
@@ -89,5 +93,21 @@ class ProjectService
     public function deleteProject(Project $project): bool
     {
         return $project->delete();
+    }
+
+    /**
+     * Bulk delete projects.
+     */
+    public function bulkDelete(array $ids)
+    {
+        return Project::whereIn('id', $ids)->delete();
+    }
+
+    /**
+     * Bulk update projects status.
+     */
+    public function bulkUpdate(array $ids, array $data)
+    {
+        return Project::whereIn('id', $ids)->update($data);
     }
 }

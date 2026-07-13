@@ -81,7 +81,7 @@
 
 @push('custom-scripts')
 <script>
-    $('#runBackupBtn').on('click', function() {
+    $('#runBackupBtn').off('click').on('click', function() {
         const $btn = $(this);
         const $label = $btn.find('.indicator-label');
         const $progress = $btn.find('.indicator-progress');
@@ -109,7 +109,7 @@
         });
     });
 
-    $('.delete-backup-btn').on('click', function() {
+    $('.delete-backup-btn').off('click').on('click', function() {
         const fileName = $(this).data('file');
         const $row = $(this).closest('tr');
 

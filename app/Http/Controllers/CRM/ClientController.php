@@ -129,4 +129,31 @@ class ClientController extends Controller
             ], 500);
         }
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate(['ids' => 'required|array']);
+        
+        try {
+            $count = $this->clientService->bulkDelete($request->ids);
+            return response()->json(['success' => true, 'message' => "$count clients deleted successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting clients: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'status' => 'required|string'
+        ]);
+        
+        try {
+            $count = $this->clientService->bulkUpdate($request->ids, ['status' => $request->status]);
+            return response()->json(['success' => true, 'message' => "$count clients updated successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating clients: ' . $e->getMessage()], 500);
+        }
+    }
 }

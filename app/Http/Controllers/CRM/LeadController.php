@@ -130,4 +130,45 @@ class LeadController extends Controller
             ], 500);
         }
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate(['ids' => 'required|array']);
+        try {
+            $count = $this->leadService->bulkDelete($request->ids);
+            return response()->json(['success' => true, 'message' => "$count leads deleted successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting leads: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'status' => 'required|string'
+        ]);
+        try {
+            $count = $this->leadService->bulkUpdate($request->ids, ['status' => $request->status]);
+            return response()->json(['success' => true, 'message' => "$count leads updated successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating leads: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function restore($id)
+    {
+        $lead = \App\Models\Lead::withTrashed()->findOrFail($id);
+        \Illuminate\Support\Facades\Gate::authorize('delete', $lead);
+        $lead->restore();
+        return response()->json(['success' => true, 'message' => 'Lead restored successfully.']);
+    }
+
+    public function forceDelete($id)
+    {
+        $lead = Lead::withTrashed()->findOrFail($id);
+        Gate::authorize('delete', $lead);
+        $lead->forceDelete();
+        return response()->json(['success' => true, 'message' => 'Lead permanently deleted.']);
+    }
 }

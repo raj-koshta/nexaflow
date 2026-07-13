@@ -16,11 +16,15 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::with(['project', 'assignee', 'milestone'])
-            ->latest()
-            ->get();
+        $query = Task::with(['project', 'assignee', 'milestone'])->latest();
+
+        if ($request->has('trashed') && $request->trashed == '1') {
+            $query->onlyTrashed();
+        }
+
+        $tasks = $query->get();
             
         $projects = \App\Models\Project::select('id', 'name')->get();
             
@@ -97,5 +101,44 @@ class TaskController extends Controller
             'success' => true,
             'message' => 'Task deleted successfully.'
         ]);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate(['ids' => 'required|array']);
+        try {
+            $count = $this->taskService->bulkDelete($request->ids);
+            return response()->json(['success' => true, 'message' => "$count tasks deleted successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting tasks: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'status' => 'required|string'
+        ]);
+        try {
+            $count = $this->taskService->bulkUpdate($request->ids, ['status' => $request->status]);
+            return response()->json(['success' => true, 'message' => "$count tasks updated successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating tasks: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function restore($id)
+    {
+        $task = Task::withTrashed()->findOrFail($id);
+        $task->restore();
+        return response()->json(['success' => true, 'message' => 'Task restored successfully.']);
+    }
+
+    public function forceDelete($id)
+    {
+        $task = Task::withTrashed()->findOrFail($id);
+        $task->forceDelete();
+        return response()->json(['success' => true, 'message' => 'Task permanently deleted.']);
     }
 }

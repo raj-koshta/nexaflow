@@ -80,7 +80,16 @@
         <h1 class="h2 fw-bold mb-0">Tasks Dashboard</h1>
         <p class="text-muted">Manage all your tasks across all projects.</p>
     </div>
-    <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-toolbar mb-2 mb-md-0 gap-2">
+        @if(request('trashed'))
+            <a href="{{ route('tasks.index') }}" class="btn btn-outline-secondary shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Tasks
+            </a>
+        @else
+            <a href="{{ route('tasks.index', ['trashed' => 1]) }}" class="btn btn-outline-danger shadow-sm">
+                <i class="bi bi-trash3 me-1"></i> View Trash
+            </a>
+        @endif
         <button type="button" class="btn btn-primary shadow-sm" onclick="openTaskOffcanvas()">
             <i class="bi bi-plus-lg me-1"></i> Add Task
         </button>
@@ -143,13 +152,39 @@
 <div class="tab-content" id="tasksTabsContent">
     <!-- List View -->
     <div class="tab-pane fade show active" id="list" role="tabpanel">
+        <div class="d-none bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded p-3 mb-3 d-flex justify-content-between align-items-center transition-all" id="bulkActionsContainer">
+            <div class="d-flex align-items-center">
+                <span class="badge bg-primary rounded-pill me-3" id="selectedCount">0</span>
+                <span class="text-primary fw-medium">Tasks Selected</span>
+            </div>
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm" id="bulkStatusSelect" style="width: 130px;">
+                    <option value="">Set Status...</option>
+                    <option value="Todo">Todo</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Review">Review</option>
+                    <option value="Done">Done</option>
+                </select>
+                <button class="btn btn-sm btn-primary" id="btnBulkUpdate">Update</button>
+                <div class="vr mx-1 opacity-25"></div>
+                <button class="btn btn-sm btn-outline-danger d-flex align-items-center" id="btnBulkDelete">
+                    <i class="bi bi-trash me-1"></i> Delete Selected
+                </button>
+            </div>
+        </div>
+
         <div class="card shadow-sm border-0" style="background: var(--card-bg); border: var(--glass-border);">
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                         <thead style="background: rgba(255,255,255,0.02);">
                             <tr>
-                                <th class="border-bottom-0 text-uppercase text-muted ps-4" style="font-size: 0.75rem; letter-spacing: 1px;">Task Title</th>
+                                <th class="border-bottom-0" style="width: 40px; padding-left: 1.5rem;">
+                                    <div class="form-check">
+                                        <input class="form-check-input select-all-checkbox" type="checkbox" id="selectAllTasks">
+                                    </div>
+                                </th>
+                                <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Task Title</th>
                                 <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Project</th>
                                 <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Assignee</th>
                                 <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Priority</th>
@@ -160,7 +195,12 @@
                         <tbody>
                             @forelse($tasks as $task)
                             <tr style="border-bottom: 1px solid var(--border-color);">
-                                <td class="py-3 ps-4">
+                                <td style="padding-left: 1.5rem;">
+                                    <div class="form-check">
+                                        <input class="form-check-input task-checkbox" type="checkbox" value="{{ $task->id }}">
+                                    </div>
+                                </td>
+                                <td class="py-3">
                                     <h6 class="mb-1 fw-bold">{{ $task->title }}</h6>
                                     <div class="text-muted small">
                                         <i class="bi bi-calendar me-1"></i> Due: {{ $task->due_date ? $task->due_date->format('M d, Y') : 'N/A' }}
@@ -203,20 +243,29 @@
                                     <span class="badge bg-{{ $sColor }} bg-opacity-10 text-{{ $sColor }} border border-{{ $sColor }} border-opacity-25 rounded-pill px-2">{{ $task->status }}</span>
                                 </td>
                                 <td class="text-end pe-4">
-                                    <button class="btn btn-sm btn-link text-primary p-1 quick-view-task-btn" data-url="{{ route('tasks.show', $task->id) }}" title="Quick View Task">
-                                        <i class="bi bi-eye fs-5"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-link text-muted edit-task-btn p-1" data-task="{{ json_encode($task) }}">
-                                        <i class="bi bi-pencil-square fs-5"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-link text-danger delete-task-btn p-1" data-id="{{ $task->id }}">
-                                        <i class="bi bi-trash fs-5"></i>
-                                    </button>
+                                    @if($task->trashed())
+                                        <button class="btn btn-sm btn-link text-success restore-task-btn p-1" data-id="{{ $task->id }}" title="Restore Task">
+                                            <i class="bi bi-arrow-counterclockwise fs-5"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-link text-danger force-delete-task-btn p-1" data-id="{{ $task->id }}" title="Permanently Delete">
+                                            <i class="bi bi-trash-fill fs-5"></i>
+                                        </button>
+                                    @else
+                                        <button class="btn btn-sm btn-link text-primary p-1 quick-view-task-btn" data-url="{{ route('tasks.show', $task->id) }}" title="Quick View Task">
+                                            <i class="bi bi-eye fs-5"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-link text-muted edit-task-btn p-1" data-task="{{ json_encode($task) }}">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-link text-danger delete-task-btn p-1" data-id="{{ $task->id }}">
+                                            <i class="bi bi-trash fs-5"></i>
+                                        </button>
+                                    @endif
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
+                                <td colspan="7" class="text-center py-5 text-muted">
                                     <i class="bi bi-check2-square fs-2 d-block mb-3 opacity-50"></i>
                                     <h6 class="fw-bold">No tasks found</h6>
                                     <p class="mb-0">Create tasks to stay organized.</p>
@@ -250,11 +299,18 @@
                             {{ $meta['title'] }}
                         </h6>
                         <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill kanban-count">
-                            {{ $tasks->where('status', $status)->count() }}
+                            @php
+                                $colTasks = $tasks->filter(function($t) use ($status) {
+                                    $tStat = strtolower(trim($t->status));
+                                    $sStat = strtolower(trim($status));
+                                    return $tStat === $sStat || ($sStat === 'todo' && str_replace(' ', '', $tStat) === 'todo');
+                                });
+                            @endphp
+                            {{ $colTasks->count() }}
                         </span>
                     </div>
                     <div class="kanban-column" data-status="{{ $status }}">
-                        @foreach($tasks->where('status', $status) as $task)
+                        @foreach($colTasks as $task)
                             <div class="kanban-card shadow-sm" data-task-id="{{ $task->id }}">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     @php
@@ -538,6 +594,34 @@
         });
     });
 
+    $(document).on('click', '.restore-task-btn', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        confirmAction('Restore Task?', 'Are you sure you want to restore this task?', function() {
+            $.ajax({
+                url: `/tasks/${id}/restore`, type: 'POST', data: { _token: '{{ csrf_token() }}' },
+                success: function(res) {
+                    showToast('Success', res.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            });
+        });
+    });
+
+    $(document).on('click', '.force-delete-task-btn', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        confirmAction('Permanently Delete Task?', 'This action cannot be undone. Are you absolutely sure?', function() {
+            $.ajax({
+                url: `/tasks/${id}/force-delete`, type: 'DELETE', data: { _token: '{{ csrf_token() }}' },
+                success: function(res) {
+                    showToast('Success', res.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            });
+        });
+    });
+
     // Task Quick View
     $(document).on('click', '.quick-view-task-btn', function(e) {
         e.preventDefault();
@@ -568,6 +652,84 @@
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 `);
+            }
+        });
+    });
+
+    // Bulk Actions Logic
+    $(document).on('change', '#selectAllTasks', function() {
+        $('.task-checkbox').prop('checked', $(this).prop('checked'));
+        toggleBulkActions();
+    });
+
+    $(document).on('change', '.task-checkbox', function() {
+        if (!$(this).prop('checked')) {
+            $('#selectAllTasks').prop('checked', false);
+        }
+        
+        if ($('.task-checkbox:checked').length === $('.task-checkbox').length) {
+            $('#selectAllTasks').prop('checked', true);
+        }
+        
+        toggleBulkActions();
+    });
+
+    function toggleBulkActions() {
+        const count = $('.task-checkbox:checked').length;
+        if (count > 0) {
+            $('#selectedCount').text(count);
+            $('#bulkActionsContainer').removeClass('d-none');
+        } else {
+            $('#bulkActionsContainer').addClass('d-none');
+        }
+    }
+
+    function getSelectedIds() {
+        return $('.task-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+    }
+
+    $('#btnBulkDelete').on('click', function() {
+        const ids = getSelectedIds();
+        if (ids.length === 0) return;
+        
+        confirmAction('Bulk Delete', `Are you sure you want to delete ${ids.length} selected tasks?`, function() {
+            $.ajax({
+                url: '{{ route("tasks.bulk-delete") }}',
+                type: 'POST',
+                data: { ids: ids, _token: '{{ csrf_token() }}' },
+                success: function(res) {
+                    showToast('Success', res.message, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                },
+                error: function(xhr) {
+                    showToast('Error', xhr.responseJSON?.message || 'Failed to delete tasks.', 'error');
+                }
+            });
+        });
+    });
+
+    $('#btnBulkUpdate').on('click', function() {
+        const ids = getSelectedIds();
+        const status = $('#bulkStatusSelect').val();
+        
+        if (ids.length === 0) return;
+        if (!status) {
+            showToast('Warning', 'Please select a status to apply.', 'warning');
+            return;
+        }
+        
+        $.ajax({
+            url: '{{ route("tasks.bulk-update") }}',
+            type: 'POST',
+            data: { ids: ids, status: status, _token: '{{ csrf_token() }}' },
+            success: function(res) {
+                showToast('Success', res.message, 'success');
+                setTimeout(() => location.reload(), 1000);
+            },
+            error: function(xhr) {
+                showToast('Error', xhr.responseJSON?.message || 'Failed to update tasks.', 'error');
             }
         });
     });
