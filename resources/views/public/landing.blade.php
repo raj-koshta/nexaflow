@@ -7,26 +7,26 @@
 <section class="hero-section text-center position-relative overflow-hidden">
     <div class="container position-relative z-1">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 mb-4 border border-primary border-opacity-25">
-                    <i class="bi bi-stars me-1"></i> NexaFlow 2.0 is Here!
+            <div class="col-lg-8 reveal">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 mb-4 border border-primary border-opacity-25" style="box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);">
+                    <i class="bi bi-stars me-1 text-warning"></i> NexaFlow 2.0 is Here!
                 </span>
-                <h1 class="display-3 fw-bold mb-4" style="letter-spacing: -1px;">
+                <h1 class="display-3 fw-bold mb-4" style="letter-spacing: -1px; text-shadow: 0 10px 30px rgba(0,0,0,0.5);">
                     Automate Your Business with <span class="text-accent">NexaFlow</span>
                 </h1>
                 <p class="lead text-muted mb-5 px-md-5">
                     The ultimate CRM platform combining client management, project tracking, and AI-powered insights to help your business grow faster than ever.
                 </p>
-                <div class="d-flex justify-content-center gap-3">
-                    <a href="{{ route('register') }}" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">
-                        Start for Free
+                <div class="d-flex justify-content-center gap-3 reveal delay-100">
+                    <a href="{{ route('register') }}" class="btn btn-primary text-white btn-lg px-5 rounded-pill shadow" style="transition: all 0.3s ease;">
+                        Start for Free <i class="bi bi-arrow-right ms-2"></i>
                     </a>
-                    <a href="{{ route('public.about') }}" class="btn btn-outline-light btn-lg px-5 rounded-pill">
+                    <a href="{{ route('public.about') }}" class="btn btn-outline-secondary btn-lg px-5 rounded-pill" style="backdrop-filter: blur(5px); background: rgba(128,128,128,0.05);">
                         Learn More
                     </a>
                 </div>
                 
-                <div class="mt-5 pt-4 text-muted small text-uppercase letter-spacing-1">
+                <div class="mt-5 pt-4 text-muted small text-uppercase letter-spacing-1 reveal delay-200">
                     <p>Trusted by innovative teams worldwide</p>
                     <div class="d-flex justify-content-center gap-4 opacity-50 fs-4">
                         <i class="bi bi-microsoft"></i>
@@ -42,35 +42,44 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-5 my-5">
+<section class="py-5 my-5 position-relative">
     <div class="container">
-        <div class="text-center mb-5 pb-3">
+        <div class="text-center mb-5 pb-3 reveal">
             <h2 class="fw-bold h1">Everything you need to succeed</h2>
             <p class="text-muted lead">Powerful features designed to streamline your workflow.</p>
         </div>
         
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="feature-card p-4 h-100 text-center">
-                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+            <div class="col-md-4 reveal delay-100">
+                <div class="feature-card p-5 h-100 text-center position-relative overflow-hidden">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-people-fill" style="font-size: 6rem;"></i>
+                    </div>
+                    <div class="bg-gradient-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 position-relative z-1 shadow-lg" style="width: 80px; height: 80px;">
                         <i class="bi bi-people fs-1"></i>
                     </div>
                     <h4 class="fw-bold mb-3">Client Management</h4>
                     <p class="text-muted">Keep all your client interactions, leads, and contacts organized in one secure place.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="feature-card p-4 h-100 text-center">
-                    <div class="bg-accent bg-opacity-10 text-accent rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+            <div class="col-md-4 reveal delay-200">
+                <div class="feature-card p-5 h-100 text-center position-relative overflow-hidden">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-kanban-fill" style="font-size: 6rem;"></i>
+                    </div>
+                    <div class="bg-gradient-accent text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 position-relative z-1 shadow-lg" style="width: 80px; height: 80px;">
                         <i class="bi bi-kanban fs-1"></i>
                     </div>
                     <h4 class="fw-bold mb-3">Project Tracking</h4>
                     <p class="text-muted">Manage projects with interactive Kanban boards, task assignments, and progress tracking.</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="feature-card p-4 h-100 text-center">
-                    <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+            <div class="col-md-4 reveal delay-300">
+                <div class="feature-card p-5 h-100 text-center position-relative overflow-hidden">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-10">
+                        <i class="bi bi-robot" style="font-size: 6rem;"></i>
+                    </div>
+                    <div class="bg-gradient-info text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 position-relative z-1 shadow-lg" style="width: 80px; height: 80px;">
                         <i class="bi bi-robot fs-1"></i>
                     </div>
                     <h4 class="fw-bold mb-3">AI Assistant</h4>
@@ -82,9 +91,11 @@
 </section>
 
 <!-- Call to Action -->
-<section class="py-5 mb-5">
+<section class="py-5 mb-5 reveal">
     <div class="container">
-        <div class="bg-gradient-primary rounded-4 p-5 text-center text-white position-relative overflow-hidden shadow-lg">
+        <div class="bg-gradient-primary rounded-4 p-5 text-center text-white position-relative overflow-hidden shadow-lg" style="border: 1px solid rgba(255,255,255,0.2);">
+            <!-- Decorative Background Elements -->
+            <div class="position-absolute top-0 start-0 w-100 h-100" style="background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%); z-index: 0;"></div>
             <div class="position-relative z-1 py-4">
                 <h2 class="fw-bold h1 mb-3">Ready to transform your business?</h2>
                 <p class="lead mb-4 opacity-75">Join thousands of companies using NexaFlow to scale their operations.</p>
