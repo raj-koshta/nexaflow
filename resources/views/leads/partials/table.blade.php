@@ -5,6 +5,11 @@
                 <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                     <thead style="background: rgba(255,255,255,0.02);">
                         <tr>
+                            <th class="border-bottom-0" style="width: 40px;">
+                                <div class="form-check">
+                                    <input class="form-check-input select-all-checkbox" type="checkbox" id="selectAllLeads">
+                                </div>
+                            </th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Lead / Contact</th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Company</th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Status</th>
@@ -15,6 +20,11 @@
                     <tbody>
                         @foreach($leads as $lead)
                         <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input lead-checkbox" type="checkbox" value="{{ $lead->id }}">
+                                </div>
+                            </td>
                             <td class="py-3">
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-sm me-3 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: var(--accent);">
@@ -62,12 +72,21 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-link text-muted edit-lead-btn p-1" data-lead="{{ json_encode($lead) }}" title="Edit Lead">
-                                    <i class="bi bi-pencil-square fs-5"></i>
-                                </button>
-                                <button class="btn btn-sm btn-link text-danger delete-lead-btn p-1" data-id="{{ $lead->id }}" title="Delete Lead">
-                                    <i class="bi bi-trash fs-5"></i>
-                                </button>
+                                @if($lead->trashed())
+                                    <button class="btn btn-sm btn-link text-success restore-lead-btn p-1" data-id="{{ $lead->id }}" title="Restore Lead">
+                                        <i class="bi bi-arrow-counterclockwise fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-danger force-delete-lead-btn p-1" data-id="{{ $lead->id }}" title="Permanently Delete">
+                                        <i class="bi bi-trash-fill fs-5"></i>
+                                    </button>
+                                @else
+                                    <button class="btn btn-sm btn-link text-muted edit-lead-btn p-1" data-lead="{{ json_encode($lead) }}" title="Edit Lead">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-danger delete-lead-btn p-1" data-id="{{ $lead->id }}" title="Delete Lead">
+                                        <i class="bi bi-trash fs-5"></i>
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

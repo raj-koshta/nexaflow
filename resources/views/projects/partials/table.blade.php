@@ -5,6 +5,11 @@
                 <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                     <thead style="background: rgba(255,255,255,0.02);">
                         <tr>
+                            <th class="border-bottom-0" style="width: 40px;">
+                                <div class="form-check">
+                                    <input class="form-check-input select-all-checkbox" type="checkbox" id="selectAllProjects">
+                                </div>
+                            </th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Project</th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Client</th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Priority</th>
@@ -16,6 +21,11 @@
                     <tbody>
                         @foreach($projects as $project)
                         <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input project-checkbox" type="checkbox" value="{{ $project->id }}">
+                                </div>
+                            </td>
                             <td class="py-3">
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-sm me-3 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: var(--accent);">
@@ -73,15 +83,24 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <a href="{{ route('projects.show', $project->id) }}" class="btn btn-sm btn-link text-primary p-1" title="View Dashboard">
-                                    <i class="bi bi-eye fs-5"></i>
-                                </a>
-                                <button class="btn btn-sm btn-link text-muted edit-project-btn p-1" data-project="{{ json_encode($project) }}" title="Edit Project">
-                                    <i class="bi bi-pencil-square fs-5"></i>
-                                </button>
-                                <button class="btn btn-sm btn-link text-danger delete-project-btn p-1" data-id="{{ $project->id }}" title="Delete Project">
-                                    <i class="bi bi-trash fs-5"></i>
-                                </button>
+                                @if($project->trashed())
+                                    <button class="btn btn-sm btn-link text-success restore-project-btn p-1" data-id="{{ $project->id }}" title="Restore Project">
+                                        <i class="bi bi-arrow-counterclockwise fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-danger force-delete-project-btn p-1" data-id="{{ $project->id }}" title="Permanently Delete">
+                                        <i class="bi bi-trash-fill fs-5"></i>
+                                    </button>
+                                @else
+                                    <a href="{{ route('projects.show', $project->id) }}" class="btn btn-sm btn-link text-primary p-1" title="View Dashboard">
+                                        <i class="bi bi-eye fs-5"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-link text-muted edit-project-btn p-1" data-project="{{ json_encode($project) }}" title="Edit Project">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-danger delete-project-btn p-1" data-id="{{ $project->id }}" title="Delete Project">
+                                        <i class="bi bi-trash fs-5"></i>
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

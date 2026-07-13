@@ -118,9 +118,31 @@ class ProjectController extends Controller
         }
     }
 
-    /**
-     * AI Task Generator: Generate tasks based on intent.
-     */
+    public function bulkDelete(Request $request)
+    {
+        $request->validate(['ids' => 'required|array']);
+        try {
+            $count = $this->projectService->bulkDelete($request->ids);
+            return response()->json(['success' => true, 'message' => "$count projects deleted successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error deleting projects: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function bulkUpdate(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'status' => 'required|string'
+        ]);
+        try {
+            $count = $this->projectService->bulkUpdate($request->ids, ['status' => $request->status]);
+            return response()->json(['success' => true, 'message' => "$count projects updated successfully."]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error updating projects: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function aiGenerateTasks(Request $request, Project $project, \App\Services\AI\AiService $aiService)
     {
         $request->validate(['intent' => 'required|string|max:1000']);
@@ -177,5 +199,21 @@ class ProjectController extends Controller
                 'message' => 'Error saving generated tasks: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function restore($id)
+    {
+        $project = Project::withTrashed()->findOrFail($id);
+        Gate::authorize('delete', $project);
+        $project->restore();
+        return response()->json(['success' => true, 'message' => 'Project restored successfully.']);
+    }
+
+    public function forceDelete($id)
+    {
+        $project = Project::withTrashed()->findOrFail($id);
+        Gate::authorize('delete', $project);
+        $project->forceDelete();
+        return response()->json(['success' => true, 'message' => 'Project permanently deleted.']);
     }
 }

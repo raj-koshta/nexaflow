@@ -5,6 +5,11 @@
                 <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                     <thead style="background: rgba(255,255,255,0.02);">
                         <tr>
+                            <th class="border-bottom-0" style="width: 40px;">
+                                <div class="form-check">
+                                    <input class="form-check-input select-all-checkbox" type="checkbox" id="selectAllClients">
+                                </div>
+                            </th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Company</th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Contact</th>
                             <th class="border-bottom-0 text-uppercase text-muted" style="font-size: 0.75rem; letter-spacing: 1px;">Industry</th>
@@ -15,6 +20,11 @@
                     <tbody>
                         @foreach($clients as $client)
                         <tr style="border-bottom: 1px solid var(--border-color);">
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input client-checkbox" type="checkbox" value="{{ $client->id }}">
+                                </div>
+                            </td>
                             <td class="py-3">
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-sm me-3 bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; color: var(--accent);">
@@ -43,15 +53,24 @@
                                 @endif
                             </td>
                             <td class="text-end">
-                                <a href="{{ route('clients.show', $client->id) }}" class="btn btn-sm btn-link text-primary p-1" title="View Profile">
-                                    <i class="bi bi-eye fs-5"></i>
-                                </a>
-                                <button class="btn btn-sm btn-link text-muted edit-client-btn p-1" data-client="{{ json_encode($client) }}" title="Edit Client">
-                                    <i class="bi bi-pencil-square fs-5"></i>
-                                </button>
-                                <button class="btn btn-sm btn-link text-danger delete-client-btn p-1" data-id="{{ $client->id }}" title="Delete Client">
-                                    <i class="bi bi-trash fs-5"></i>
-                                </button>
+                                @if($client->trashed())
+                                    <button class="btn btn-sm btn-link text-success restore-client-btn p-1" data-id="{{ $client->id }}" title="Restore Client">
+                                        <i class="bi bi-arrow-counterclockwise fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-danger force-delete-client-btn p-1" data-id="{{ $client->id }}" title="Permanently Delete">
+                                        <i class="bi bi-trash-fill fs-5"></i>
+                                    </button>
+                                @else
+                                    <a href="{{ route('clients.show', $client->id) }}" class="btn btn-sm btn-link text-primary p-1" title="View Profile">
+                                        <i class="bi bi-eye fs-5"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-link text-muted edit-client-btn p-1" data-client="{{ json_encode($client) }}" title="Edit Client">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-link text-danger delete-client-btn p-1" data-id="{{ $client->id }}" title="Delete Client">
+                                        <i class="bi bi-trash fs-5"></i>
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

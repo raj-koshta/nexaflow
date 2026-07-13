@@ -14,6 +14,10 @@ class LeadService
     {
         $query = Lead::query()->latest();
 
+        if (isset($filters['trashed']) && $filters['trashed'] == '1') {
+            $query->onlyTrashed();
+        }
+
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function($q) use ($search) {
@@ -71,6 +75,22 @@ class LeadService
     public function deleteLead(Lead $lead): bool
     {
         return $lead->delete();
+    }
+
+    /**
+     * Bulk delete leads.
+     */
+    public function bulkDelete(array $ids)
+    {
+        return Lead::whereIn('id', $ids)->delete();
+    }
+
+    /**
+     * Bulk update leads status.
+     */
+    public function bulkUpdate(array $ids, array $data)
+    {
+        return Lead::whereIn('id', $ids)->update($data);
     }
 
     /**

@@ -50,7 +50,10 @@
             // Toast helper function
             window.showToast = function(title, message, type = 'success') {
                 const id = 'toast-' + Date.now();
-                const icon = type === 'success' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-danger';
+                let icon = 'bi-info-circle-fill text-info';
+                if (type === 'success') icon = 'bi-check-circle-fill text-success';
+                else if (type === 'error') icon = 'bi-exclamation-triangle-fill text-danger';
+                else if (type === 'warning') icon = 'bi-exclamation-circle-fill text-warning';
                 
                 const toastHtml = `
                     <div id="${id}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">

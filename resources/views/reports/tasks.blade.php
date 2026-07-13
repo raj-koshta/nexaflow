@@ -77,6 +77,9 @@
             </div>
             <div class="card-body">
                 @if($tasksByStatus->count() > 0)
+                    <div class="mb-4" style="height: 250px;">
+                        <canvas id="taskStatusChart"></canvas>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                             <tbody>
@@ -151,3 +154,39 @@
     </div>
 </div>
 @endsection
+
+@push('custom-scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Task Status Chart
+        const statusData = {!! json_encode($tasksByStatus) !!};
+        if (statusData.length > 0 && document.getElementById('taskStatusChart')) {
+            const ctx = document.getElementById('taskStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: statusData.map(d => d.status),
+                    datasets: [{
+                        data: statusData.map(d => d.total),
+                        backgroundColor: statusData.map(d => {
+                            if (d.status === 'Todo') return '#64748b';
+                            if (d.status === 'In Progress') return '#3b82f6';
+                            if (d.status === 'Review') return '#f59e0b';
+                            if (d.status === 'Done') return '#10b981';
+                            return '#94a3b8';
+                        }),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: 'var(--text-main)' } }
+                    }
+                }
+            });
+        }
+    });
+</script>
+@endpush

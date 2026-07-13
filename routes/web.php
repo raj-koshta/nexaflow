@@ -22,8 +22,20 @@ use App\Http\Controllers\SettingController;
 // Guest Routes
 Route::middleware('guest')->group(function () {
     Route::get('/', function () {
-        return view('auth.login');
-    });
+        return view('public.landing');
+    })->name('public.landing');
+    
+    Route::get('/about', function () {
+        return view('public.about');
+    })->name('public.about');
+
+    Route::get('/pricing', function () {
+        return view('public.pricing');
+    })->name('public.pricing');
+
+    Route::get('/contact', function () {
+        return view('public.contact');
+    })->name('public.contact');
     
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -58,8 +70,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [NotificationController::class, 'index'])->name('index');
         Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
         Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('readAll');
-        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
         Route::get('/test', [NotificationController::class, 'testNotification'])->name('test');
+        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
     });
 
     // Activity Logs
@@ -68,6 +80,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // CRM Bulk Actions & Soft Deletes
+    Route::post('clients/bulk-delete', [ClientController::class, 'bulkDelete'])->name('clients.bulk-delete');
+    Route::post('clients/bulk-update', [ClientController::class, 'bulkUpdate'])->name('clients.bulk-update');
+    Route::post('clients/{client}/restore', [ClientController::class, 'restore'])->name('clients.restore')->withTrashed();
+    Route::delete('clients/{client}/force-delete', [ClientController::class, 'forceDelete'])->name('clients.force-delete')->withTrashed();
+    
+    Route::post('leads/bulk-delete', [LeadController::class, 'bulkDelete'])->name('leads.bulk-delete');
+    Route::post('leads/bulk-update', [LeadController::class, 'bulkUpdate'])->name('leads.bulk-update');
+    Route::post('leads/{lead}/restore', [LeadController::class, 'restore'])->name('leads.restore')->withTrashed();
+    Route::delete('leads/{lead}/force-delete', [LeadController::class, 'forceDelete'])->name('leads.force-delete')->withTrashed();
 
     // CRM Routes
     Route::resource('clients', ClientController::class);
@@ -117,9 +140,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Projects
+    Route::post('projects/bulk-delete', [\App\Http\Controllers\CRM\ProjectController::class, 'bulkDelete'])->name('projects.bulk-delete');
+    Route::post('projects/bulk-update', [\App\Http\Controllers\CRM\ProjectController::class, 'bulkUpdate'])->name('projects.bulk-update');
+    Route::post('projects/{project}/restore', [\App\Http\Controllers\CRM\ProjectController::class, 'restore'])->name('projects.restore')->withTrashed();
+    Route::delete('projects/{project}/force-delete', [\App\Http\Controllers\CRM\ProjectController::class, 'forceDelete'])->name('projects.force-delete')->withTrashed();
     Route::resource('projects', \App\Http\Controllers\CRM\ProjectController::class);
     Route::post('projects/{project}/ai-tasks', [\App\Http\Controllers\CRM\ProjectController::class, 'aiGenerateTasks'])->name('projects.ai-tasks');
     Route::resource('milestones', \App\Http\Controllers\CRM\MilestoneController::class)->only(['store', 'update', 'destroy']);
+    Route::post('tasks/bulk-delete', [\App\Http\Controllers\CRM\TaskController::class, 'bulkDelete'])->name('tasks.bulk-delete');
+    Route::post('tasks/bulk-update', [\App\Http\Controllers\CRM\TaskController::class, 'bulkUpdate'])->name('tasks.bulk-update');
+    Route::post('tasks/{task}/restore', [\App\Http\Controllers\CRM\TaskController::class, 'restore'])->name('tasks.restore')->withTrashed();
+    Route::delete('tasks/{task}/force-delete', [\App\Http\Controllers\CRM\TaskController::class, 'forceDelete'])->name('tasks.force-delete')->withTrashed();
     Route::resource('tasks', \App\Http\Controllers\CRM\TaskController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 
     // Support Desk

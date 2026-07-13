@@ -37,8 +37,34 @@
                     <option value="Medium">Medium</option>
                     <option value="Low">Low</option>
                 </select>
-                <button class="btn btn-outline-secondary d-flex align-items-center" id="refreshBtn" title="Refresh">
+                <div class="form-check form-switch d-flex align-items-center ms-2">
+                    <input class="form-check-input me-2" type="checkbox" id="trashedFilter" style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                    <label class="form-check-label mb-0 text-muted" for="trashedFilter" style="cursor: pointer;"><i class="bi bi-trash3"></i> Trash</label>
+                </div>
+                <button class="btn btn-outline-secondary d-flex align-items-center ms-2" id="refreshBtn" title="Refresh">
                     <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="d-none bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded p-3 mb-3 d-flex justify-content-between align-items-center transition-all" id="bulkActionsContainer">
+            <div class="d-flex align-items-center">
+                <span class="badge bg-primary rounded-pill me-3" id="selectedCount">0</span>
+                <span class="text-primary fw-medium">Projects Selected</span>
+            </div>
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm" id="bulkStatusSelect" style="width: 130px;">
+                    <option value="">Set Status...</option>
+                    <option value="Planning">Planning</option>
+                    <option value="Active">Active</option>
+                    <option value="On Hold">On Hold</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+                <button class="btn btn-sm btn-primary" id="btnBulkUpdate">Update</button>
+                <div class="vr mx-1 opacity-25"></div>
+                <button class="btn btn-sm btn-outline-danger d-flex align-items-center" id="btnBulkDelete">
+                    <i class="bi bi-trash me-1"></i> Delete Selected
                 </button>
             </div>
         </div>
@@ -71,6 +97,7 @@
         const search = $('#searchInput').val();
         const status = $('#statusFilter').val();
         const priority = $('#priorityFilter').val();
+        const trashed = $('#trashedFilter').is(':checked') ? 1 : 0;
         
         $('#table-container').addClass('d-none');
         $('#projects-skeleton').removeClass('d-none');
@@ -78,7 +105,7 @@
         $.ajax({
             url: url,
             type: 'GET',
-            data: { search: search, status: status, priority: priority },
+            data: { search: search, status: status, priority: priority, trashed: trashed },
             success: function(response) {
                 $('#table-container').html(response).removeClass('d-none');
                 $('#projects-skeleton').addClass('d-none');
@@ -97,6 +124,18 @@
     });
 
     $('#statusFilter, #priorityFilter').on('change', function() {
+        loadProjects();
+    });
+
+    $('#trashedFilter').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#bulkActionsContainer').addClass('d-none');
+            $('#statusFilter').val('').prop('disabled', true);
+            $('#priorityFilter').val('').prop('disabled', true);
+        } else {
+            $('#statusFilter').prop('disabled', false);
+            $('#priorityFilter').prop('disabled', false);
+        }
         loadProjects();
     });
 
@@ -199,6 +238,139 @@
                     showToast('Error', 'Failed to delete project.', 'error');
                 }
             });
+        });
+    });
+
+    // Restore Project
+    $(document).on('click', '.restore-project-btn', function() {
+        const id = $(this).data('id');
+        const $btn = $(this);
+        const originalIcon = $btn.html();
+        
+        confirmAction('Restore Project?', 'Are you sure you want to restore this project?', function() {
+            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+            
+            $.ajax({
+                url: `/projects/${id}/restore`,
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function(response) {
+                    showToast('Success', response.message, 'success');
+                    loadProjects();
+                },
+                error: function(xhr) {
+                    showToast('Error', xhr.responseJSON?.message || 'Error restoring project', 'error');
+                    $btn.html(originalIcon).prop('disabled', false);
+                }
+            });
+        });
+    });
+
+    // Permanent Delete Project
+    $(document).on('click', '.force-delete-project-btn', function() {
+        const id = $(this).data('id');
+        const $btn = $(this);
+        const originalIcon = $btn.html();
+        
+        confirmAction('Permanently Delete Project?', 'This action cannot be undone. Are you absolutely sure?', function() {
+            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+            
+            $.ajax({
+                url: `/projects/${id}/force-delete`,
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function(response) {
+                    showToast('Success', response.message, 'success');
+                    loadProjects();
+                },
+                error: function(xhr) {
+                    showToast('Error', xhr.responseJSON?.message || 'Error permanently deleting project', 'error');
+                    $btn.html(originalIcon).prop('disabled', false);
+                }
+            });
+        });
+    });
+
+    // Bulk Actions Logic
+    $(document).on('change', '#selectAllProjects', function() {
+        $('.project-checkbox').prop('checked', $(this).prop('checked'));
+        toggleBulkActions();
+    });
+
+    $(document).on('change', '.project-checkbox', function() {
+        if (!$(this).prop('checked')) {
+            $('#selectAllProjects').prop('checked', false);
+        }
+        
+        if ($('.project-checkbox:checked').length === $('.project-checkbox').length) {
+            $('#selectAllProjects').prop('checked', true);
+        }
+        
+        toggleBulkActions();
+    });
+
+    function toggleBulkActions() {
+        const count = $('.project-checkbox:checked').length;
+        if (count > 0) {
+            $('#selectedCount').text(count);
+            $('#bulkActionsContainer').removeClass('d-none');
+        } else {
+            $('#bulkActionsContainer').addClass('d-none');
+        }
+    }
+
+    function getSelectedIds() {
+        return $('.project-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+    }
+
+    $('#btnBulkDelete').on('click', function() {
+        const ids = getSelectedIds();
+        if (ids.length === 0) return;
+        
+        confirmAction('Bulk Delete', `Are you sure you want to delete ${ids.length} selected projects?`, function() {
+            $.ajax({
+                url: '{{ route("projects.bulk-delete") }}',
+                type: 'POST',
+                data: { ids: ids, _token: '{{ csrf_token() }}' },
+                success: function(res) {
+                    showToast('Success', res.message, 'success');
+                    $('#selectAllProjects').prop('checked', false);
+                    toggleBulkActions();
+                    loadProjects();
+                },
+                error: function(xhr) {
+                    showToast('Error', xhr.responseJSON?.message || 'Failed to delete projects.', 'error');
+                }
+            });
+        });
+    });
+
+    $('#btnBulkUpdate').on('click', function() {
+        const ids = getSelectedIds();
+        const status = $('#bulkStatusSelect').val();
+        
+        if (ids.length === 0) return;
+        if (!status) {
+            showToast('Warning', 'Please select a status to apply.', 'warning');
+            return;
+        }
+        
+        $.ajax({
+            url: '{{ route("projects.bulk-update") }}',
+            type: 'POST',
+            data: { ids: ids, status: status, _token: '{{ csrf_token() }}' },
+            success: function(res) {
+                showToast('Success', res.message, 'success');
+                $('#selectAllProjects').prop('checked', false);
+                $('#bulkStatusSelect').val('');
+                toggleBulkActions();
+                loadProjects();
+            },
+            error: function(xhr) {
+                showToast('Error', xhr.responseJSON?.message || 'Failed to update projects.', 'error');
+            }
         });
     });
 </script>

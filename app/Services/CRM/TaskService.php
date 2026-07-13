@@ -51,6 +51,22 @@ class TaskService
         
         return $deleted;
     }
+
+    /**
+     * Bulk delete tasks.
+     */
+    public function bulkDelete(array $ids)
+    {
+        return Task::whereIn('id', $ids)->delete();
+    }
+
+    /**
+     * Bulk update tasks status.
+     */
+    public function bulkUpdate(array $ids, array $data)
+    {
+        return Task::whereIn('id', $ids)->update($data);
+    }
     
     protected function updateMilestoneProgress($milestoneId)
     {

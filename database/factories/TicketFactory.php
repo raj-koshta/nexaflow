@@ -13,6 +13,7 @@ class TicketFactory extends Factory {
             'priority' => fake()->randomElement(['low', 'medium', 'high', 'urgent']),
             'status' => fake()->randomElement(['open', 'in_progress', 'resolved', 'closed']),
             'assigned_to' => 1,
+            'created_by' => 1,
         ];
     }
 }

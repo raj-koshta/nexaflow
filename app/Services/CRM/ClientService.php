@@ -14,6 +14,10 @@ class ClientService
     {
         $query = Client::query();
 
+        if (isset($filters['trashed']) && $filters['trashed'] == '1') {
+            $query->onlyTrashed();
+        }
+
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
@@ -60,14 +64,31 @@ class ClientService
         return $client;
     }
 
-    /**
-     * Delete a client.
-     */
     public function deleteClient(Client $client)
     {
         $client->delete();
         Log::info('Client deleted (soft): ' . $client->client_code);
         return true;
+    }
+
+    /**
+     * Bulk delete clients.
+     */
+    public function bulkDelete(array $ids)
+    {
+        $count = Client::whereIn('id', $ids)->delete();
+        Log::info("Bulk deleted $count clients");
+        return $count;
+    }
+
+    /**
+     * Bulk update clients status.
+     */
+    public function bulkUpdate(array $ids, array $data)
+    {
+        $count = Client::whereIn('id', $ids)->update($data);
+        Log::info("Bulk updated $count clients");
+        return $count;
     }
 
     /**

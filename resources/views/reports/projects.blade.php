@@ -64,6 +64,9 @@
             </div>
             <div class="card-body">
                 @if($projectsByStatus->count() > 0)
+                    <div class="mb-4" style="height: 250px;">
+                        <canvas id="projectStatusChart"></canvas>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                             <tbody>
@@ -98,6 +101,9 @@
             </div>
             <div class="card-body">
                 @if($projectsByPriority->count() > 0)
+                    <div class="mb-4" style="height: 250px;">
+                        <canvas id="projectPriorityChart"></canvas>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="color: var(--text-main);">
                             <tbody>
@@ -176,3 +182,82 @@
     </div>
 </div>
 @endsection
+
+@push('custom-scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Project Status Chart
+        const statusData = {!! json_encode($projectsByStatus) !!};
+        if (statusData.length > 0 && document.getElementById('projectStatusChart')) {
+            const ctx = document.getElementById('projectStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusData.map(d => d.status),
+                    datasets: [{
+                        data: statusData.map(d => d.total),
+                        backgroundColor: statusData.map(d => {
+                            if (d.status === 'Planning') return '#0ea5e9';
+                            if (d.status === 'Active') return '#3b82f6';
+                            if (d.status === 'On Hold') return '#f59e0b';
+                            if (d.status === 'Completed') return '#10b981';
+                            if (d.status === 'Cancelled') return '#ef4444';
+                            return '#94a3b8';
+                        }),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: 'var(--text-main)' } }
+                    }
+                }
+            });
+        }
+
+        // Project Priority Chart
+        const priorityData = {!! json_encode($projectsByPriority) !!};
+        if (priorityData.length > 0 && document.getElementById('projectPriorityChart')) {
+            const ctx2 = document.getElementById('projectPriorityChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: priorityData.map(d => d.priority),
+                    datasets: [{
+                        label: 'Projects',
+                        data: priorityData.map(d => d.total),
+                        backgroundColor: priorityData.map(d => {
+                            if (d.priority === 'Critical') return '#ef4444';
+                            if (d.priority === 'High') return '#f59e0b';
+                            if (d.priority === 'Medium') return '#0ea5e9';
+                            if (d.priority === 'Low') return '#64748b';
+                            return '#94a3b8';
+                        }),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0, color: 'var(--text-main)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        x: {
+                            ticks: { color: 'var(--text-main)' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+@endpush

@@ -75,8 +75,33 @@
                     <option value="qualified">Qualified</option>
                     <option value="lost">Lost</option>
                 </select>
-                <button class="btn btn-outline-secondary d-flex align-items-center" id="refreshBtn" title="Refresh">
+                <div class="form-check form-switch d-flex align-items-center ms-2">
+                    <input class="form-check-input me-2" type="checkbox" id="trashedFilter" style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                    <label class="form-check-label mb-0 text-muted" for="trashedFilter" style="cursor: pointer;"><i class="bi bi-trash3"></i> Trash</label>
+                </div>
+                <button class="btn btn-outline-secondary d-flex align-items-center ms-2" id="refreshBtn" title="Refresh">
                     <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="d-none bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded p-3 mb-3 d-flex justify-content-between align-items-center transition-all" id="bulkActionsContainer">
+            <div class="d-flex align-items-center">
+                <span class="badge bg-primary rounded-pill me-3" id="selectedCount">0</span>
+                <span class="text-primary fw-medium">Leads Selected</span>
+            </div>
+            <div class="d-flex gap-2">
+                <select class="form-select form-select-sm" id="bulkStatusSelect" style="width: 130px;">
+                    <option value="">Set Status...</option>
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="qualified">Qualified</option>
+                    <option value="lost">Lost</option>
+                </select>
+                <button class="btn btn-sm btn-primary" id="btnBulkUpdate">Update</button>
+                <div class="vr mx-1 opacity-25"></div>
+                <button class="btn btn-sm btn-outline-danger d-flex align-items-center" id="btnBulkDelete">
+                    <i class="bi bi-trash me-1"></i> Delete Selected
                 </button>
             </div>
         </div>
@@ -106,6 +131,7 @@
         const search = $('#searchInput').val();
         const status = $('#statusFilter').val();
         const source = $('#sourceFilter').val();
+        const trashed = $('#trashedFilter').is(':checked') ? 1 : 0;
         
         // Show skeleton
         $('#table-container').addClass('d-none');
@@ -114,7 +140,7 @@
         $.ajax({
             url: url,
             type: 'GET',
-            data: { search: search, status: status, source: source },
+            data: { search: search, status: status, source: source, trashed: trashed },
             success: function(response) {
                 $('#table-container').html(response).removeClass('d-none');
                 $('#leads-skeleton').addClass('d-none');
@@ -134,6 +160,18 @@
     });
 
     $('#statusFilter, #sourceFilter').on('change', function() {
+        loadLeads();
+    });
+
+    $('#trashedFilter').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#bulkActionsContainer').addClass('d-none');
+            $('#statusFilter').val('').prop('disabled', true);
+            $('#sourceFilter').val('').prop('disabled', true);
+        } else {
+            $('#statusFilter').prop('disabled', false);
+            $('#sourceFilter').prop('disabled', false);
+        }
         loadLeads();
     });
 
@@ -245,6 +283,139 @@
                     $btn.html(originalIcon).prop('disabled', false);
                 }
             });
+        });
+    });
+
+    // Restore Lead
+    $(document).on('click', '.restore-lead-btn', function() {
+        const id = $(this).data('id');
+        const $btn = $(this);
+        const originalIcon = $btn.html();
+        
+        confirmAction('Restore Lead?', 'Are you sure you want to restore this lead?', function() {
+            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+            
+            $.ajax({
+                url: `/leads/${id}/restore`,
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function(response) {
+                    showToast('Success', response.message, 'success');
+                    loadLeads();
+                },
+                error: function(xhr) {
+                    showToast('Error', xhr.responseJSON?.message || 'Error restoring lead', 'error');
+                    $btn.html(originalIcon).prop('disabled', false);
+                }
+            });
+        });
+    });
+
+    // Permanent Delete Lead
+    $(document).on('click', '.force-delete-lead-btn', function() {
+        const id = $(this).data('id');
+        const $btn = $(this);
+        const originalIcon = $btn.html();
+        
+        confirmAction('Permanently Delete Lead?', 'This action cannot be undone. Are you absolutely sure?', function() {
+            $btn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>').prop('disabled', true);
+            
+            $.ajax({
+                url: `/leads/${id}/force-delete`,
+                type: 'DELETE',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function(response) {
+                    showToast('Success', response.message, 'success');
+                    loadLeads();
+                },
+                error: function(xhr) {
+                    showToast('Error', xhr.responseJSON?.message || 'Error permanently deleting lead', 'error');
+                    $btn.html(originalIcon).prop('disabled', false);
+                }
+            });
+        });
+    });
+
+    // Bulk Actions Logic
+    $(document).on('change', '#selectAllLeads', function() {
+        $('.lead-checkbox').prop('checked', $(this).prop('checked'));
+        toggleBulkActions();
+    });
+
+    $(document).on('change', '.lead-checkbox', function() {
+        if (!$(this).prop('checked')) {
+            $('#selectAllLeads').prop('checked', false);
+        }
+        
+        if ($('.lead-checkbox:checked').length === $('.lead-checkbox').length) {
+            $('#selectAllLeads').prop('checked', true);
+        }
+        
+        toggleBulkActions();
+    });
+
+    function toggleBulkActions() {
+        const count = $('.lead-checkbox:checked').length;
+        if (count > 0) {
+            $('#selectedCount').text(count);
+            $('#bulkActionsContainer').removeClass('d-none');
+        } else {
+            $('#bulkActionsContainer').addClass('d-none');
+        }
+    }
+
+    function getSelectedIds() {
+        return $('.lead-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+    }
+
+    $('#btnBulkDelete').on('click', function() {
+        const ids = getSelectedIds();
+        if (ids.length === 0) return;
+        
+        confirmAction('Bulk Delete', `Are you sure you want to delete ${ids.length} selected leads?`, function() {
+            $.ajax({
+                url: '{{ route("leads.bulk-delete") }}',
+                type: 'POST',
+                data: { ids: ids },
+                success: function(res) {
+                    showToast('Success', res.message, 'success');
+                    $('#selectAllLeads').prop('checked', false);
+                    toggleBulkActions();
+                    loadLeads();
+                },
+                error: function(xhr) {
+                    showToast('Error', xhr.responseJSON?.message || 'Failed to delete leads.', 'error');
+                }
+            });
+        });
+    });
+
+    $('#btnBulkUpdate').on('click', function() {
+        const ids = getSelectedIds();
+        const status = $('#bulkStatusSelect').val();
+        
+        if (ids.length === 0) return;
+        if (!status) {
+            showToast('Warning', 'Please select a status to apply.', 'warning');
+            return;
+        }
+        
+        $.ajax({
+            url: '{{ route("leads.bulk-update") }}',
+            type: 'POST',
+            data: { ids: ids, status: status },
+            success: function(res) {
+                showToast('Success', res.message, 'success');
+                $('#selectAllLeads').prop('checked', false);
+                $('#bulkStatusSelect').val('');
+                toggleBulkActions();
+                loadLeads();
+            },
+            error: function(xhr) {
+                showToast('Error', xhr.responseJSON?.message || 'Failed to update leads.', 'error');
+            }
         });
     });
 </script>
