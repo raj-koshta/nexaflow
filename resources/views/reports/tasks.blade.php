@@ -14,9 +14,16 @@
         <h1 class="h2 fw-bold mb-0">Task Report</h1>
     </div>
     <div class="btn-toolbar mb-2 mb-md-0">
-        <button type="button" class="btn btn-outline-secondary shadow-sm" onclick="window.print()">
-            <i class="bi bi-printer me-1"></i> Print
-        </button>
+        <div class="dropdown">
+            <button class="btn btn-primary shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-download me-1"></i> Export & Actions
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="background: var(--secondary-bg); border: var(--glass-border) !important;">
+                <li><a class="dropdown-item py-2 text-main" href="{{ route('reports.tasks.export') }}"><i class="bi bi-filetype-csv me-2 text-success"></i> Download CSV</a></li>
+                <li><hr class="dropdown-divider" style="border-color: rgba(255,255,255,0.1);"></li>
+                <li><button class="dropdown-item py-2 text-main" onclick="window.print()"><i class="bi bi-printer me-2 text-muted"></i> Print Report</button></li>
+            </ul>
+        </div>
     </div>
 </div>
 
