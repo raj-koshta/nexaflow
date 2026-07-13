@@ -27,3 +27,6 @@ class Company extends Model
         return $this->belongsToMany(User::class)->withPivot('is_primary')->withTimestamps();
     }
 }
+
+
+
