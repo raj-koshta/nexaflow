@@ -4,6 +4,23 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+use Illuminate\Support\Facades\Event;
+use App\Events\DashboardLoaded;
+use App\Events\ReportGenerated;
+use App\Events\NotificationCreated;
+use App\Events\NotificationRead;
+use App\Events\SettingsUpdated;
+use App\Events\BackupCreated;
+use App\Events\SearchIndexed;
+use App\Events\RealtimeMessageSent;
+
+use App\Listeners\UpdateDashboardCache;
+use App\Listeners\SendNotification;
+use App\Listeners\GenerateActivityLog;
+use App\Listeners\SyncSearchIndex;
+use App\Listeners\QueueEmails;
+use App\Listeners\RefreshStatistics;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -21,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(DashboardLoaded::class, UpdateDashboardCache::class);
+        Event::listen(ReportGenerated::class, RefreshStatistics::class);
+        Event::listen(NotificationCreated::class, SendNotification::class);
+        Event::listen(NotificationCreated::class, QueueEmails::class);
+        Event::listen(SearchIndexed::class, SyncSearchIndex::class);
     }
 }

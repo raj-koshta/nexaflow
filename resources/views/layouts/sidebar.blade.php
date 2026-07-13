@@ -140,9 +140,15 @@
             </li>
             <ul class="nav flex-column mb-2">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.index') }}">
-                        <i class="bi bi-sliders sidebar-icon"></i>
+                    <a class="nav-link {{ request()->routeIs('settings.*') && !request()->routeIs('backups.*') ? 'active' : '' }}" href="{{ route('settings.index') }}">
+                        <i class="bi bi-gear"></i>
                         General Settings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('backups.*') ? 'active' : '' }}" href="{{ route('backups.index') }}">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        System Backups
                     </a>
                 </li>
                 <li class="nav-item">

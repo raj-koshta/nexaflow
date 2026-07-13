@@ -7,8 +7,7 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Custom Scripts placeholder -->
-@stack('custom-scripts')
+<!-- Custom Scripts placeholder used to be here, moved to master -->
 <!-- SortableJS -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
@@ -44,35 +43,7 @@
         });
     };
 
-    // Global toast function
-    function showToast(title, message, type = 'success') {
-        let bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
-        let toastHtml = `
-            <div class="toast align-items-center text-white ${bgClass} border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <strong>${title}</strong><br>${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            </div>
-        `;
-        let $toastContainer = $('#toast-container');
-        if($toastContainer.length === 0) {
-            $('body').append('<div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>');
-            $toastContainer = $('#toast-container');
-        }
-        let $toastElement = $(toastHtml);
-        $toastContainer.append($toastElement);
-        let bsToast = new bootstrap.Toast($toastElement[0]);
-        bsToast.show();
-        
-        $toastElement.on('hidden.bs.toast', function () {
-            $(this).remove();
-        });
-    }
-
-    // Theme Switcher Logic
+    // showToast is now defined in master.blade.php    // Theme Switcher Logic
     $(document).ready(function() {
         const currentTheme = document.documentElement.getAttribute('data-bs-theme');
         const themeIcon = $('#theme-icon');
