@@ -45,6 +45,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:Administrator'])->group(function () {
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+        
+        // Backups
+        Route::get('/settings/backups', [\App\Http\Controllers\BackupController::class, 'index'])->name('backups.index');
+        Route::post('/settings/backups', [\App\Http\Controllers\BackupController::class, 'store'])->name('backups.store');
+        Route::get('/settings/backups/download', [\App\Http\Controllers\BackupController::class, 'download'])->name('backups.download');
+        Route::delete('/settings/backups/delete', [\App\Http\Controllers\BackupController::class, 'destroy'])->name('backups.destroy');
     });
 
     // Notifications
