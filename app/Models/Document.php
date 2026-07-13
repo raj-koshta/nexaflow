@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Document extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'client_id', 'lead_id', 'file_name', 'file_path', 'mime_type', 'size', 'created_by'
     ];
@@ -25,3 +27,6 @@ class Document extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 }
+
+
+

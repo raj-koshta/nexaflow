@@ -1,24 +1,23 @@
 <?php
-
 namespace Database\Factories;
-
-use App\Models\Lead;
 use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends Factory<Lead>
- */
-class LeadFactory extends Factory
-{
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
+use App\Models\User;
+class LeadFactory extends Factory {
+    public function definition(): array {
         return [
-            //
+            'lead_code' => 'LED-' . strtoupper(\Illuminate\Support\Str::random(6)),
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->phoneNumber(),
+            'company' => fake()->company(),
+            'source' => fake()->randomElement(['website', 'referral', 'cold_call', 'trade_show']),
+            'status' => fake()->randomElement(['new', 'contacted', 'qualified', 'lost']),
+            'priority' => fake()->randomElement(['low', 'medium', 'high']),
+            'expected_value' => fake()->randomFloat(2, 1000, 50000),
+            'remarks' => fake()->sentence(),
+            'assigned_to' => 1, // Will be overridden in seeder
+            'created_by' => 1,
         ];
     }
 }
+

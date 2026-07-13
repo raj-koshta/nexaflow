@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Note extends Model
 {
+    use HasFactory;
     protected $fillable = ['client_id', 'lead_id', 'content', 'created_by'];
 
     public function client()
@@ -23,3 +25,6 @@ class Note extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 }
+
+
+
