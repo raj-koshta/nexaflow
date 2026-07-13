@@ -69,7 +69,19 @@ class LeadController extends Controller
     public function show(Lead $lead)
     {
         Gate::authorize('view', $lead);
-        return response()->json($lead);
+        
+        $lead->load([
+            'notes.creator',
+            'documents.creator',
+            'activities' => function($q) {
+                $q->orderBy('activity_date', 'desc');
+            },
+            'activities.creator',
+            'assignee',
+            'creator'
+        ]);
+
+        return view('leads.show', compact('lead'));
     }
 
     /**

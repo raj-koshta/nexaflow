@@ -125,8 +125,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Reports
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/clients/export', [ReportController::class, 'exportClients'])->name('clients.export');
         Route::get('/clients', [ReportController::class, 'clients'])->name('clients');
+        
+        Route::get('/projects/export', [ReportController::class, 'exportProjects'])->name('projects.export');
         Route::get('/projects', [ReportController::class, 'projects'])->name('projects');
+        
+        Route::get('/tasks/export', [ReportController::class, 'exportTasks'])->name('tasks.export');
         Route::get('/tasks', [ReportController::class, 'tasks'])->name('tasks');
     });
 
