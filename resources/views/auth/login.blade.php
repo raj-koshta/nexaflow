@@ -36,7 +36,7 @@
                     <div class="mb-4">
                         <label for="password" class="form-label d-flex justify-content-between">
                             <span>Password</span>
-                            <a href="#" style="color: var(--accent); text-decoration: none; font-size: 0.85rem;">Forgot password?</a>
+                            <a href="{{ route('password.request') }}" style="color: var(--accent); text-decoration: none; font-size: 0.85rem;">Forgot password?</a>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text border-0" style="background: rgba(255,255,255,0.05); color: var(--text-muted);"><i class="bi bi-lock"></i></span>

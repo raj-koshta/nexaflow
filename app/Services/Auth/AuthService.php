@@ -44,7 +44,7 @@ class AuthService
 
         Log::info('New user registered: ' . $user->email);
         
-        // TODO: Fire UserRegistered Event here
+        event(new \Illuminate\Auth\Events\Registered($user));
 
         return $user;
     }
