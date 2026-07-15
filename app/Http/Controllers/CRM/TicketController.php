@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\User;
 use App\Services\CRM\TicketService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
 {
@@ -20,6 +21,8 @@ class TicketController extends Controller
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Ticket::class);
+
         if ($request->ajax()) {
             $query = Ticket::with(['client', 'assignee', 'creator']);
 
@@ -51,6 +54,8 @@ class TicketController extends Controller
 
     public function show(Request $request, Ticket $ticket)
     {
+        Gate::authorize('view', $ticket);
+
         $ticket->load(['client', 'assignee', 'creator', 'replies.user']);
         
         if ($request->ajax()) {
@@ -62,6 +67,8 @@ class TicketController extends Controller
 
     public function store(Request $request)
     {
+        Gate::authorize('create', Ticket::class);
+
         $validated = $request->validate([
             'client_id' => 'nullable|exists:clients,id',
             'project_id' => 'nullable|exists:projects,id',
@@ -84,6 +91,8 @@ class TicketController extends Controller
 
     public function update(Request $request, Ticket $ticket)
     {
+        Gate::authorize('update', $ticket);
+
         $validated = $request->validate([
             'client_id' => 'nullable|exists:clients,id',
             'project_id' => 'nullable|exists:projects,id',
@@ -106,6 +115,8 @@ class TicketController extends Controller
 
     public function destroy(Ticket $ticket)
     {
+        Gate::authorize('delete', $ticket);
+
         $this->ticketService->deleteTicket($ticket);
 
         return response()->json([
@@ -119,6 +130,8 @@ class TicketController extends Controller
      */
     public function aiSummarize(Request $request, Ticket $ticket, \App\Services\AI\AiService $aiService)
     {
+        Gate::authorize('view', $ticket);
+
         $ticket->load('replies.user');
         
         $thread = "Subject: " . $ticket->subject . "\n";
@@ -147,6 +160,8 @@ class TicketController extends Controller
      */
     public function aiGenerateReply(Request $request, Ticket $ticket, \App\Services\AI\AiService $aiService)
     {
+        Gate::authorize('update', $ticket);
+
         $request->validate(['intent' => 'required|string|max:500']);
         
         $thread = "Subject: " . $ticket->subject . "\n";
