@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Services\CRM\TaskService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TaskController extends Controller
 {
@@ -18,6 +19,8 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Task::class);
+
         $query = Task::with(['project', 'assignee', 'milestone'])->latest();
 
         if ($request->has('trashed') && $request->trashed == '1') {
@@ -33,6 +36,8 @@ class TaskController extends Controller
 
     public function show(Request $request, Task $task)
     {
+        Gate::authorize('view', $task);
+
         $task->load(['project', 'assignee', 'milestone', 'creator']);
         
         if ($request->ajax()) {
@@ -45,6 +50,8 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
+        Gate::authorize('create', Task::class);
+
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'milestone_id' => 'nullable|exists:milestones,id',
@@ -70,6 +77,8 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
+        Gate::authorize('update', $task);
+
         $validated = $request->validate([
             'milestone_id' => 'nullable|exists:milestones,id',
             'assigned_to' => 'nullable|exists:users,id',
@@ -95,6 +104,8 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
+        Gate::authorize('delete', $task);
+
         $this->taskService->deleteTask($task);
 
         return response()->json([
@@ -105,6 +116,7 @@ class TaskController extends Controller
 
     public function bulkDelete(Request $request)
     {
+        Gate::authorize('delete', Task::class);
         $request->validate(['ids' => 'required|array']);
         try {
             $count = $this->taskService->bulkDelete($request->ids);
@@ -116,6 +128,7 @@ class TaskController extends Controller
 
     public function bulkUpdate(Request $request)
     {
+        Gate::authorize('update', Task::class);
         $request->validate([
             'ids' => 'required|array',
             'status' => 'required|string'
@@ -130,6 +143,7 @@ class TaskController extends Controller
 
     public function restore($id)
     {
+        Gate::authorize('restore', Task::class);
         $task = Task::withTrashed()->findOrFail($id);
         $task->restore();
         return response()->json(['success' => true, 'message' => 'Task restored successfully.']);
@@ -137,6 +151,7 @@ class TaskController extends Controller
 
     public function forceDelete($id)
     {
+        Gate::authorize('forceDelete', Task::class);
         $task = Task::withTrashed()->findOrFail($id);
         $task->forceDelete();
         return response()->json(['success' => true, 'message' => 'Task permanently deleted.']);
