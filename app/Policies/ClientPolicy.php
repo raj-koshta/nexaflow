@@ -12,7 +12,7 @@ class ClientPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('view clients') || $user->can('manage crm');
     }
 
     /**
@@ -20,7 +20,7 @@ class ClientPolicy
      */
     public function view(User $user, Client $client): bool
     {
-        return true;
+        return $user->can('view clients') || $user->can('manage crm');
     }
 
     /**
@@ -28,7 +28,7 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('create clients') || $user->can('manage crm');
     }
 
     /**
@@ -36,7 +36,7 @@ class ClientPolicy
      */
     public function update(User $user, Client $client): bool
     {
-        return true;
+        return $user->can('edit clients') || $user->can('manage crm');
     }
 
     /**
@@ -44,7 +44,7 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client): bool
     {
-        return true;
+        return $user->can('delete clients') || $user->can('manage crm');
     }
 
     /**
@@ -52,7 +52,7 @@ class ClientPolicy
      */
     public function restore(User $user, Client $client): bool
     {
-        return true;
+        return $user->can('delete clients') || $user->can('manage crm');
     }
 
     /**
@@ -60,6 +60,6 @@ class ClientPolicy
      */
     public function forceDelete(User $user, Client $client): bool
     {
-        return true;
+        return $user->can('delete clients') || $user->can('manage crm');
     }
 }

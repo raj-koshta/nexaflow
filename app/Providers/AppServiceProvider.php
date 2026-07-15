@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 use Illuminate\Support\Facades\Event;
 use App\Events\DashboardLoaded;
@@ -38,6 +39,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Administrator') ? true : null;
+        });
+
         Event::listen(DashboardLoaded::class, UpdateDashboardCache::class);
         Event::listen(ReportGenerated::class, RefreshStatistics::class);
         Event::listen(NotificationCreated::class, SendNotification::class);

@@ -236,7 +236,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-exclamation-triangle-fill fs-4 text-warning me-3"></i>
                                     <div>
-                                        <p class="mb-0 small text-dark">Redis is required for AI queues, caching, and background jobs. Changing these settings may disrupt active jobs.</p>
+                                        <p class="mb-0 small">Redis is required for AI queues, caching, and background jobs. Changing these settings may disrupt active jobs.</p>
                                     </div>
                                 </div>
                             </div>

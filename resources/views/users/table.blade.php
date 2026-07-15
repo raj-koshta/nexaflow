@@ -15,7 +15,7 @@
                     <div class="d-flex align-items-center">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=8b5cf6&color=fff&size=40" class="rounded-circle me-3" alt="{{ $user->name }}">
                         <div>
-                            <div class="fw-bold text-dark">{{ $user->name }}</div>
+                            <div class="fw-bold">{{ $user->name }}</div>
                             <div class="text-muted small">{{ $user->email }}</div>
                         </div>
                     </div>

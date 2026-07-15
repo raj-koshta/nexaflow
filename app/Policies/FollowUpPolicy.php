@@ -12,7 +12,7 @@ class FollowUpPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('view followups') || $user->can('manage crm');
     }
 
     /**
@@ -20,7 +20,7 @@ class FollowUpPolicy
      */
     public function view(User $user, FollowUp $followUp): bool
     {
-        return true;
+        return $user->can('view followups') || $user->can('manage crm');
     }
 
     /**
@@ -28,7 +28,7 @@ class FollowUpPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('create followups') || $user->can('manage crm');
     }
 
     /**
@@ -36,7 +36,7 @@ class FollowUpPolicy
      */
     public function update(User $user, FollowUp $followUp): bool
     {
-        return true;
+        return $user->can('edit followups') || $user->can('manage crm');
     }
 
     /**
@@ -44,7 +44,7 @@ class FollowUpPolicy
      */
     public function delete(User $user, FollowUp $followUp): bool
     {
-        return true;
+        return $user->can('delete followups') || $user->can('manage crm');
     }
 
     /**
@@ -52,7 +52,7 @@ class FollowUpPolicy
      */
     public function restore(User $user, FollowUp $followUp): bool
     {
-        return true;
+        return $user->can('delete followups') || $user->can('manage crm');
     }
 
     /**
@@ -60,6 +60,6 @@ class FollowUpPolicy
      */
     public function forceDelete(User $user, FollowUp $followUp): bool
     {
-        return true;
+        return $user->can('delete followups') || $user->can('manage crm');
     }
 }
