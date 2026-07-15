@@ -10,16 +10,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RealtimeMessageSent
+class RealtimeMessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $conversationId;
+    public $messageHtml;
+    
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($conversationId, $messageHtml)
     {
-        //
+        $this->conversationId = $conversationId;
+        $this->messageHtml = $messageHtml;
     }
 
     /**
@@ -30,7 +34,12 @@ class RealtimeMessageSent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new PrivateChannel('chat.' . $this->conversationId),
         ];
+    }
+    
+    public function broadcastAs()
+    {
+        return 'message.sent';
     }
 }

@@ -131,6 +131,28 @@ class LeadController extends Controller
         }
     }
 
+    /**
+     * Convert the lead to a client.
+     */
+    public function convert(Lead $lead)
+    {
+        Gate::authorize('update', $lead);
+
+        try {
+            $client = $this->leadService->convertLead($lead);
+            return response()->json([
+                'success' => true,
+                'message' => 'Lead converted to Client successfully!',
+                'redirect' => route('clients.show', $client->id)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error converting lead: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function bulkDelete(Request $request)
     {
         $request->validate(['ids' => 'required|array']);

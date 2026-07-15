@@ -3,7 +3,13 @@
 namespace App\Services\CRM;
 
 use App\Models\Lead;
+use App\Models\Client;
+use App\Models\Contact;
+use App\Models\Activity;
+use App\Models\FollowUp;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LeadService
 {
@@ -45,15 +51,17 @@ class LeadService
      */
     public function createLead(array $data): Lead
     {
-        $data['lead_code'] = $this->generateLeadCode();
-        $data['created_by'] = Auth::id();
-        
-        // If assigned_to is empty, maybe assign to self, but specification says nullable.
-        if (empty($data['assigned_to'])) {
-            $data['assigned_to'] = null;
-        }
+        return DB::transaction(function () use ($data) {
+            $data['lead_code'] = $this->generateLeadCode();
+            $data['created_by'] = Auth::id();
+            
+            // If assigned_to is empty, maybe assign to self, but specification says nullable.
+            if (empty($data['assigned_to'])) {
+                $data['assigned_to'] = null;
+            }
 
-        return Lead::create($data);
+            return Lead::create($data);
+        });
     }
 
     /**
@@ -61,12 +69,14 @@ class LeadService
      */
     public function updateLead(Lead $lead, array $data): Lead
     {
-        if (empty($data['assigned_to'])) {
-            $data['assigned_to'] = null;
-        }
+        return DB::transaction(function () use ($lead, $data) {
+            if (empty($data['assigned_to'])) {
+                $data['assigned_to'] = null;
+            }
 
-        $lead->update($data);
-        return $lead;
+            $lead->update($data);
+            return $lead;
+        });
     }
 
     /**
@@ -74,7 +84,73 @@ class LeadService
      */
     public function deleteLead(Lead $lead): bool
     {
-        return $lead->delete();
+        return DB::transaction(function () use ($lead) {
+            return $lead->delete();
+        });
+    }
+
+    /**
+     * Convert a Lead to a Client and Contact.
+     */
+    public function convertLead(Lead $lead): Client
+    {
+        return DB::transaction(function () use ($lead) {
+            // 1. Create Client
+            $client = app(\App\Services\CRM\ClientService::class)->createClient([
+                'company_name' => $lead->company ?? $lead->name . ' Company',
+                'email' => $lead->email,
+                'phone' => $lead->phone,
+                'status' => 'active',
+            ]);
+
+            // 2. Create Contact
+            Contact::create([
+                'client_id' => $client->id,
+                'name' => $lead->name,
+                'email' => $lead->email,
+                'phone' => $lead->phone,
+                'is_primary' => true,
+                'created_by' => Auth::id(),
+            ]);
+
+            // 3. Copy Activities
+            $activities = $lead->activities;
+            foreach ($activities as $activity) {
+                Activity::create([
+                    'client_id' => $client->id,
+                    'type' => $activity->type,
+                    'title' => $activity->title,
+                    'description' => $activity->description,
+                    'activity_date' => $activity->activity_date,
+                    'created_by' => $activity->created_by,
+                ]);
+            }
+
+            // 4. Copy Follow Ups
+            $followUps = $lead->followUps;
+            foreach ($followUps as $followUp) {
+                FollowUp::create([
+                    'client_id' => $client->id,
+                    'type' => $followUp->type,
+                    'scheduled_at' => $followUp->scheduled_at,
+                    'notes' => $followUp->notes,
+                    'status' => $followUp->status,
+                    'created_by' => $followUp->created_by,
+                ]);
+            }
+
+            // 5. Mark Lead Converted (using existing 'qualified' status)
+            $lead->update(['status' => 'qualified']);
+            
+            // Generate Activity Log
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'Lead Converted',
+                'description' => "Lead {$lead->name} was converted to Client {$client->company_name}.",
+            ]);
+
+            return $client;
+        });
     }
 
     /**

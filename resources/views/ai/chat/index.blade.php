@@ -460,6 +460,17 @@ $(document).ready(function() {
             }
         });
     }
+
+    // Realtime WebSocket Listener via Laravel Echo
+    if (conversationId && typeof window.Echo !== 'undefined') {
+        window.Echo.private('chat.' + conversationId)
+            .listen('.message.sent', (e) => {
+                // If we receive a websocket event for this chat, append it.
+                // Note: The AJAX response already handles the sender's own UI update.
+                // This is useful if the chat is open in another tab.
+                replaceTypingWithAiMessage(e.messageHtml);
+            });
+    }
 });
 </script>
 @endpush
