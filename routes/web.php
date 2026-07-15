@@ -103,6 +103,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('leads/bulk-update', [LeadController::class, 'bulkUpdate'])->name('leads.bulk-update');
     Route::post('leads/{lead}/restore', [LeadController::class, 'restore'])->name('leads.restore')->withTrashed();
     Route::delete('leads/{lead}/force-delete', [LeadController::class, 'forceDelete'])->name('leads.force-delete')->withTrashed();
+    Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
 
     // CRM Routes
     Route::resource('clients', ClientController::class);

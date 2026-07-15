@@ -8,6 +8,7 @@ use App\Models\AiMessage;
 use App\Services\AI\AiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\RealtimeMessageSent;
 
 class AiChatController extends Controller
 {
@@ -64,6 +65,7 @@ class AiChatController extends Controller
 
         // Get AI Response
         $aiResponseText = $this->aiService->generateResponse($request->message, 'AI Chat');
+        $htmlResponse = \Illuminate\Support\Str::markdown($aiResponseText, ['html_input' => 'escape']);
 
         // Save AI Message
         $aiMessage = $conversation->messages()->create([
@@ -71,12 +73,15 @@ class AiChatController extends Controller
             'content' => $aiResponseText
         ]);
 
+        // Broadcast to WebSockets
+        broadcast(new RealtimeMessageSent($conversation->id, $htmlResponse))->toOthers();
+
         return response()->json([
             'success' => true,
             'conversation_id' => $conversation->id,
             'user_message' => $userMessage,
             'ai_message' => $aiMessage,
-            'ai_message_html' => \Illuminate\Support\Str::markdown($aiResponseText, ['html_input' => 'escape']),
+            'ai_message_html' => $htmlResponse,
             'is_new' => !$id
         ]);
     }
