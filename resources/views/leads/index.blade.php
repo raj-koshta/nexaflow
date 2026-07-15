@@ -46,9 +46,11 @@
         <p class="text-muted mb-0">Track and manage potential customers.</p>
     </div>
     <div class="btn-toolbar mb-2 mb-md-0">
+        @canany(['create leads', 'manage crm'])
         <button type="button" class="btn btn-primary shadow-sm" onclick="openLeadOffcanvas()">
             <i class="bi bi-plus-lg me-1"></i> Add Lead
         </button>
+        @endcanany
     </div>
 </div>
 
@@ -99,10 +101,12 @@
                     <option value="lost">Lost</option>
                 </select>
                 <button class="btn btn-sm btn-primary" id="btnBulkUpdate">Update</button>
+                @canany(['delete leads', 'manage crm'])
                 <div class="vr mx-1 opacity-25"></div>
                 <button class="btn btn-sm btn-outline-danger d-flex align-items-center" id="btnBulkDelete">
                     <i class="bi bi-trash me-1"></i> Delete Selected
                 </button>
+                @endcanany
             </div>
         </div>
 

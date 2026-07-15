@@ -8,72 +8,96 @@
                 </a>
             </li>
             
+            @canany(['view clients', 'view leads', 'view contacts', 'manage crm'])
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
                 <span>CRM Core</span>
             </h6>
+            @endcanany
+            @canany(['view clients', 'manage crm'])
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" href="{{ route('clients.index') }}">
                     <i class="bi bi-buildings-fill sidebar-icon"></i>
                     Clients
                 </a>
             </li>
+            @endcanany
 
+            @canany(['view leads', 'manage crm'])
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('leads.*') ? 'active' : '' }}" href="{{ route('leads.index') }}">
                     <i class="bi bi-funnel-fill sidebar-icon"></i>
                     Leads
                 </a>
             </li>
+            @endcanany
+            @canany(['view contacts', 'manage crm'])
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('contacts.*') ? 'active' : '' }}" href="{{ route('contacts.index') }}">
                     <i class="bi bi-person-badge-fill sidebar-icon"></i>
                     Contacts
                 </a>
             </li>
+            @endcanany
 
+            @canany(['view projects', 'view tasks', 'view activities', 'view followups', 'manage files', 'manage crm'])
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
                 <span>Operations</span>
             </h6>
+            @endcanany
+            @can('view projects')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('projects.*') ? 'active' : '' }}" href="{{ route('projects.index') }}">
                     <i class="bi bi-briefcase-fill sidebar-icon"></i>
                     Projects
                 </a>
             </li>
+            @endcan
+            @can('view tasks')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('tasks.*') ? 'active' : '' }}" href="{{ route('tasks.index') }}">
                     <i class="bi bi-check-square-fill sidebar-icon"></i>
                     Tasks
                 </a>
             </li>
+            @endcan
+            @canany(['view activities', 'manage crm'])
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('activities.*') ? 'active' : '' }}" href="{{ route('activities.index') }}">
                     <i class="bi bi-activity sidebar-icon"></i>
                     Activities
                 </a>
             </li>
+            @endcanany
+            @canany(['view followups', 'manage crm'])
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('follow-ups.*') ? 'active' : '' }}" href="{{ route('follow-ups.index') }}">
                     <i class="bi bi-calendar-check sidebar-icon"></i>
                     Follow Ups
                 </a>
             </li>
+            @endcanany
+            @can('manage files')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('file-manager.*') ? 'active' : '' }}" href="{{ route('file-manager.index') }}">
                     <i class="bi bi-folder2-open sidebar-icon"></i>
                     File Manager
                 </a>
             </li>
+            @endcan
             
+            @canany(['view tickets', 'manage crm'])
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
                 <span>Support</span>
             </h6>
+            @endcanany
+            @can('view tickets')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('tickets.*') ? 'active' : '' }}" href="{{ route('tickets.index') }}">
                     <i class="bi bi-ticket-detailed sidebar-icon"></i>
                     Tickets
                 </a>
             </li>
+            @endcan
             
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
                 <span>AI Assistant</span>
@@ -122,15 +146,19 @@
                 </a>
             </li>
 
+            @canany(['view reports', 'manage crm'])
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-4 mt-4 mb-2 text-uppercase" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; color: var(--accent);">
                 <span>Intelligence</span>
             </h6>
+            @endcanany
+            @can('view reports')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}">
                     <i class="bi bi-bar-chart-line-fill sidebar-icon"></i>
                     Reports
                 </a>
             </li>
+            @endcan
             
             @role('Administrator')
             <li class="nav-item mt-3">

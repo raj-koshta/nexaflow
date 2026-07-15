@@ -12,7 +12,7 @@ class ContactPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('view contacts') || $user->can('manage crm');
     }
 
     /**
@@ -20,7 +20,7 @@ class ContactPolicy
      */
     public function view(User $user, Contact $contact): bool
     {
-        return true;
+        return $user->can('view contacts') || $user->can('manage crm');
     }
 
     /**
@@ -28,7 +28,7 @@ class ContactPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('create contacts') || $user->can('manage crm');
     }
 
     /**
@@ -36,7 +36,7 @@ class ContactPolicy
      */
     public function update(User $user, Contact $contact): bool
     {
-        return true;
+        return $user->can('edit contacts') || $user->can('manage crm');
     }
 
     /**
@@ -44,7 +44,7 @@ class ContactPolicy
      */
     public function delete(User $user, Contact $contact): bool
     {
-        return true;
+        return $user->can('delete contacts') || $user->can('manage crm');
     }
 
     /**
@@ -52,7 +52,7 @@ class ContactPolicy
      */
     public function restore(User $user, Contact $contact): bool
     {
-        return true;
+        return $user->can('delete contacts') || $user->can('manage crm');
     }
 
     /**
@@ -60,6 +60,6 @@ class ContactPolicy
      */
     public function forceDelete(User $user, Contact $contact): bool
     {
-        return true;
+        return $user->can('delete contacts') || $user->can('manage crm');
     }
 }

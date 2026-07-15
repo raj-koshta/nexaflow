@@ -73,19 +73,25 @@
                             </td>
                             <td class="text-end">
                                 @if($lead->trashed())
+                                    @canany(['delete leads', 'manage crm'])
                                     <button class="btn btn-sm btn-link text-success restore-lead-btn p-1" data-id="{{ $lead->id }}" title="Restore Lead">
                                         <i class="bi bi-arrow-counterclockwise fs-5"></i>
                                     </button>
                                     <button class="btn btn-sm btn-link text-danger force-delete-lead-btn p-1" data-id="{{ $lead->id }}" title="Permanently Delete">
                                         <i class="bi bi-trash-fill fs-5"></i>
                                     </button>
+                                    @endcanany
                                 @else
+                                    @canany(['edit leads', 'manage crm'])
                                     <button class="btn btn-sm btn-link text-muted edit-lead-btn p-1" data-lead="{{ json_encode($lead) }}" title="Edit Lead">
                                         <i class="bi bi-pencil-square fs-5"></i>
                                     </button>
+                                    @endcanany
+                                    @canany(['delete leads', 'manage crm'])
                                     <button class="btn btn-sm btn-link text-danger delete-lead-btn p-1" data-id="{{ $lead->id }}" title="Delete Lead">
                                         <i class="bi bi-trash fs-5"></i>
                                     </button>
+                                    @endcanany
                                 @endif
                             </td>
                         </tr>

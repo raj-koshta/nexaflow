@@ -12,7 +12,7 @@ class ActivityPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('view activities') || $user->can('manage crm');
     }
 
     /**
@@ -20,7 +20,7 @@ class ActivityPolicy
      */
     public function view(User $user, Activity $activity): bool
     {
-        return true;
+        return $user->can('view activities') || $user->can('manage crm');
     }
 
     /**
@@ -28,7 +28,7 @@ class ActivityPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('create activities') || $user->can('manage crm');
     }
 
     /**
@@ -36,7 +36,7 @@ class ActivityPolicy
      */
     public function update(User $user, Activity $activity): bool
     {
-        return true;
+        return $user->can('edit activities') || $user->can('manage crm');
     }
 
     /**
@@ -44,7 +44,7 @@ class ActivityPolicy
      */
     public function delete(User $user, Activity $activity): bool
     {
-        return true;
+        return $user->can('delete activities') || $user->can('manage crm');
     }
 
     /**
@@ -52,7 +52,7 @@ class ActivityPolicy
      */
     public function restore(User $user, Activity $activity): bool
     {
-        return true;
+        return $user->can('delete activities') || $user->can('manage crm');
     }
 
     /**
@@ -60,6 +60,6 @@ class ActivityPolicy
      */
     public function forceDelete(User $user, Activity $activity): bool
     {
-        return true;
+        return $user->can('delete activities') || $user->can('manage crm');
     }
 }
